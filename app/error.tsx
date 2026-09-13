@@ -1,0 +1,2 @@
+'use client'
+export default function Error({reset}:{error:Error&{digest?:string};reset:()=>void}){return <main><h1>Factory error</h1><p>The workspace hit an unexpected error.</p><button onClick={()=>reset()}>Retry</button><a href="/">Home</a></main>}
