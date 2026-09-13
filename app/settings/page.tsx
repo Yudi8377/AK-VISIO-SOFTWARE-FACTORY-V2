@@ -1,0 +1,1 @@
+export default function Settings(){return <main><h1>Settings</h1><p>Factory configuration and environment controls are isolated to V2.</p><a href="/">Back</a></main>}
