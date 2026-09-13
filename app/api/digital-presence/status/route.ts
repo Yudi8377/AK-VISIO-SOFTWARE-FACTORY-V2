@@ -1,18 +1,31 @@
 import { NextResponse } from 'next/server'
-import { getProviderStatuses } from '@/lib/digital-presence/provider-status'
 
-export const dynamic = 'force-dynamic'
+export const dynamic = 'force-static'
 
 export async function GET() {
-  const providers = getProviderStatuses()
   return NextResponse.json({
     status: 'ok',
     automation: {
       internalGeneration: true,
-      externalPublishing: providers.some((provider) => provider.provider === 'meta' && provider.ready),
-      liveSerpResearch: providers.some((provider) => provider.provider === 'serp' && provider.ready),
+      liveSerpResearch: false,
+      externalPublishing: false,
     },
-    providers,
+    providers: [
+      {
+        provider: 'serp',
+        configured: false,
+        ready: false,
+        missing: ['runtime SERP provider binding'],
+        capabilities: ['live SERP observations', 'rank/title/source capture', 'keyword evidence provenance'],
+      },
+      {
+        provider: 'meta',
+        configured: false,
+        ready: false,
+        missing: ['runtime Meta OAuth binding'],
+        capabilities: ['OAuth connection', 'authorized Facebook Page discovery', 'Instagram professional asset discovery', 'publishing authorization'],
+      },
+    ],
     policy: {
       accountCreation: 'MANUAL',
       externalPublishing: 'SEMI_AUTO',
