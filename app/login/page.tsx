@@ -1,20 +1,21 @@
 'use client'
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase-browser'
 import Link from 'next/link'
 
 export default function Login(){
+  const router=useRouter()
   const [email,setEmail]=useState('')
   const [password,setPassword]=useState('')
   const [busy,setBusy]=useState(false)
   const [message,setMessage]=useState('')
   async function submit(e:React.FormEvent){
-    e.preventDefault()
-    setBusy(true);setMessage('')
+    e.preventDefault();setBusy(true);setMessage('')
     const supabase=createClient()
     const {error}=await supabase.auth.signInWithPassword({email,password})
     setBusy(false)
-    if(error)setMessage(error.message);else window.location.href='/requests'
+    if(error)setMessage(error.message);else router.replace('/requests')
   }
   return <main className="shell"><header className="topbar"><strong>AK VISIO <span>SOFTWARE FACTORY V2</span></strong><Link href="/">Home</Link></header><section style={{maxWidth:520,margin:'80px auto'}}><p className="eyebrow">SECURE ACCESS</p><h1 style={{fontSize:52}}>Sign in.</h1><p className="lede">Supabase Auth establishes the identity used by RLS ownership policies.</p><form onSubmit={submit} style={{display:'grid',gap:12}}><input required type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="Email" style={{padding:15,borderRadius:10,border:'1px solid #33405f',background:'#0c1220',color:'#eef3ff'}}/><input required type="password" value={password} onChange={e=>setPassword(e.target.value)} placeholder="Password" style={{padding:15,borderRadius:10,border:'1px solid #33405f',background:'#0c1220',color:'#eef3ff'}}/><button disabled={busy} className="primary" style={{padding:14,border:0,borderRadius:10}}>{busy?'Signing in…':'Sign in'}</button></form>{message&&<p>{message}</p>}</section></main>
 }
