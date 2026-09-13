@@ -1,0 +1,1 @@
+export default function Repairs(){return <main><h1>Repairs</h1><p>Bounded self-healing history with issue, action and result.</p><a href="/">Back</a></main>}
