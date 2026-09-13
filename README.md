@@ -11,3 +11,4 @@ V2 uses its own GitHub repository and dedicated Supabase project. It is intentio
 ## Local engine
 The hardened local factory engine lives under `E:\AK-VISIO-SOFTWARE-FACTORY-V2` and has passed the V2 E2E and hardening gates.
 ## Production runtime configuration verified.
+Production runtime configuration verification.
