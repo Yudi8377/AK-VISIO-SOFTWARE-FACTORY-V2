@@ -17,13 +17,32 @@ export default function UpdatePassword() {
   useEffect(() => {
     const supabase = createClient()
     let active = true
+
+    async function establishRecoverySession() {
+      const code = new URLSearchParams(window.location.search).get('code')
+      if (code) {
+        const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code)
+        if (exchangeError) {
+          if (active) setError(`Recovery link could not be verified: ${exchangeError.message}`)
+          return
+        }
+        window.history.replaceState({}, document.title, window.location.pathname)
+      }
+
+      const { data, error: sessionError } = await supabase.auth.getSession()
+      if (active && sessionError) setError(sessionError.message)
+      if (active && data.session) setReady(true)
+    }
+
     const { data: listener } = supabase.auth.onAuthStateChange((event) => {
       if (!active) return
-      if (event === 'PASSWORD_RECOVERY') setReady(true)
+      if (event === 'PASSWORD_RECOVERY' || event === 'SIGNED_IN') setReady(true)
     })
-    supabase.auth.getSession().then(({ data }) => {
-      if (active && data.session) setReady(true)
+
+    establishRecoverySession().catch((err) => {
+      if (active) setError(err instanceof Error ? err.message : 'Unable to establish recovery session.')
     })
+
     return () => { active = false; listener.subscription.unsubscribe() }
   }, [])
 
