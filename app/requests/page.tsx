@@ -1,0 +1,1 @@
+export default function Requests(){return <main><h1>Requests</h1><p>Factory request workspace. Connect this view to factory_requests with authenticated ownership before production use.</p><a href="/">Back</a></main>}
