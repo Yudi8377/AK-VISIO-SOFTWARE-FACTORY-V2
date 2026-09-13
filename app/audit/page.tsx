@@ -1,0 +1,1 @@
+export default function Audit(){return <main><h1>Audit</h1><p>Factory event history and operational trace surface.</p><a href="/">Back</a></main>}
