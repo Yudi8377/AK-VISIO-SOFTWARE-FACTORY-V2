@@ -8,7 +8,6 @@ function slugify(value:string){
 }
 
 export default function Requests(){
-  const supabase=createClient()
   const [project,setProject]=useState('')
   const [text,setText]=useState('')
   const [rows,setRows]=useState<any[]>([])
@@ -16,6 +15,7 @@ export default function Requests(){
   const [message,setMessage]=useState('')
 
   async function load(){
+    const supabase=createClient()
     const {data,error}=await supabase.from('factory_requests').select('*').order('created_at',{ascending:false}).limit(50)
     if(error)setMessage(error.message); else setRows(data||[])
   }
@@ -24,8 +24,9 @@ export default function Requests(){
   async function save(){
     if(!project.trim() || !text.trim()){setMessage('Project name and request are required');return}
     setBusy(true); setMessage('')
+    const supabase=createClient()
     const {data:userData}=await supabase.auth.getUser()
-    if(!userData.user){window.location.href='/login';return}
+    if(!userData.user){setBusy(false);window.location.href='/login';return}
     const userId=userData.user.id
     const {data:existingProject,error:projectLookupError}=await supabase.from('factory_projects').select('id').eq('owner_id',userId).eq('slug',slugify(project)).maybeSingle()
     if(projectLookupError){setBusy(false);setMessage(projectLookupError.message);return}
