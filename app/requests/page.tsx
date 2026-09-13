@@ -16,6 +16,14 @@ function withTimeout<T>(promise: PromiseLike<T>, label: string, ms = REQUEST_TIM
   })
 }
 
+async function getAuthenticatedUser() {
+  const supabase = createClient()
+  const { data, error } = await withTimeout(supabase.auth.getSession(), 'Authentication check')
+  if (error) throw error
+  if (!data.session?.user) return null
+  return data.session.user
+}
+
 export default function Requests() {
   const [project, setProject] = useState('')
   const [text, setText] = useState('')
@@ -26,9 +34,8 @@ export default function Requests() {
   async function load() {
     try {
       const supabase = createClient()
-      const { data: userData, error: authError } = await withTimeout(supabase.auth.getUser(), 'Authentication check')
-      if (authError) throw authError
-      if (!userData.user) {
+      const user = await getAuthenticatedUser()
+      if (!user) {
         window.location.href = '/login'
         return
       }
@@ -56,14 +63,13 @@ export default function Requests() {
 
     try {
       const supabase = createClient()
-      const { data: userData, error: authError } = await withTimeout(supabase.auth.getUser(), 'Authentication check')
-      if (authError) throw authError
-      if (!userData.user) {
+      const user = await getAuthenticatedUser()
+      if (!user) {
         window.location.href = '/login'
         return
       }
 
-      const userId = userData.user.id
+      const userId = user.id
       const slug = slugify(project)
       const { data: existingProject, error: projectLookupError } = await withTimeout(
         supabase.from('factory_projects').select('id').eq('owner_id', userId).eq('slug', slug).maybeSingle(),
