@@ -1,0 +1,1 @@
+export default async function RunDetail({params}:{params:Promise<{id:string}>}){const {id}=await params;return <main><h1>Run {id}</h1><p>Run detail surface for stage state, events, artifacts, repairs and validation.</p><a href="/runs">Runs</a></main>}
