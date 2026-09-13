@@ -1,0 +1,1 @@
+export default function Home(){return <main><h1>AK VISIO Software Factory V2</h1><p>Standalone factory control plane.</p><a href="/requests">Requests</a><a href="/runs">Runs</a><a href="/projects">Projects</a><a href="/validation">Validation</a></main>}
