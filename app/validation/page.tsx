@@ -1,0 +1,1 @@
+export default function Validation(){return <main><h1>Validation</h1><p>Release gate workspace for validation results and go-live readiness.</p><a href="/">Back</a></main>}
