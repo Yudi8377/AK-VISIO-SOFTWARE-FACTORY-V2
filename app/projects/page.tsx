@@ -1,0 +1,1 @@
+export default function Projects(){return <main><h1>Projects</h1><p>Generated project inventory and lifecycle workspace.</p><a href="/">Back</a></main>}
