@@ -35,3 +35,12 @@ jobs:
 
       - name: Verify production container definition
         run: test -f Dockerfile && test -f .dockerignore
+
+      - name: Smoke test production health endpoint
+        run: |
+          set -euo pipefail
+          url="https://ak-visio-software-factory-v2.dwahyudi8377.workers.dev/api/health"
+          body="$(curl --fail --silent --show-error --location --max-time 30 "$url")"
+          echo "$body"
+          echo "$body" | grep -F '"status":"ok"'
+          echo "$body" | grep -F '"service":"ak-visio-software-factory-v2"'
