@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase-browser'
 
-const SITE_URL = 'https://ak-visio-software-factory-v2.dwahyudi8377.workers.dev'
+const PRODUCTION_URL = 'https://ak-visio-software-factory-v2.dwahyudi8377.workers.dev'
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('')
@@ -18,8 +18,11 @@ export default function ForgotPassword() {
     setMessage('')
     setError('')
     const supabase = createClient()
+    const redirectBase = typeof window !== 'undefined' && window.location.origin
+      ? window.location.origin
+      : PRODUCTION_URL
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${SITE_URL}/update-password`,
+      redirectTo: `${redirectBase}/update-password`,
     })
     setBusy(false)
     if (error) setError(error.message)
