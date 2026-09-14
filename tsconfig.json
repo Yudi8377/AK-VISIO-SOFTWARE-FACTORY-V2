@@ -21,6 +21,7 @@
   "exclude": [
     "node_modules",
     "lib/digital-presence/safety.test.ts",
-    "lib/digital-presence/runtime-boundary.test.ts"
+    "lib/digital-presence/runtime-boundary.test.ts",
+    "supabase/functions/**"
   ]
 }
