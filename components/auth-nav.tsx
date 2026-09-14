@@ -5,6 +5,9 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase-browser'
 
+const box: React.CSSProperties = { fontSize: 10, textDecoration: 'none', border: '1px solid #253149', background: '#0c121e', color: '#b9c5db', borderRadius: 8, padding: '10px 11px' }
+const wrap: React.CSSProperties = { display: 'flex', alignItems: 'center', gap: 7 }
+
 export default function AuthNav() {
   const router = useRouter()
   const pathname = usePathname()
@@ -14,23 +17,9 @@ export default function AuthNav() {
   useEffect(() => {
     const supabase = createClient()
     let active = true
-
-    supabase.auth.getUser().then(({ data }) => {
-      if (!active) return
-      setEmail(data.user?.email ?? null)
-      setReady(true)
-    })
-
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!active) return
-      setEmail(session?.user?.email ?? null)
-      setReady(true)
-    })
-
-    return () => {
-      active = false
-      listener.subscription.unsubscribe()
-    }
+    supabase.auth.getUser().then(({ data }) => { if (active) { setEmail(data.user?.email ?? null); setReady(true) } })
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => { if (active) { setEmail(session?.user?.email ?? null); setReady(true) } })
+    return () => { active = false; listener.subscription.unsubscribe() }
   }, [])
 
   async function signOut() {
@@ -40,23 +29,12 @@ export default function AuthNav() {
     router.refresh()
   }
 
-  if (!ready) {
-    return <div className="auth-actions" aria-live="polite"><span className="auth-loading">Checking access…</span></div>
-  }
+  if (!ready) return <div style={wrap} aria-live="polite"><span style={{ ...box, color: '#64728e' }}>Checking access…</span></div>
+  if (!email) return <div style={wrap}><Link href="/login" style={pathname === '/login' ? { ...box, color: '#fff', borderColor: '#7284ff' } : box}>Sign in</Link></div>
 
-  if (!email) {
-    return (
-      <div className="auth-actions">
-        <Link href="/login" className={pathname === '/login' ? 'auth-link active' : 'auth-link'}>Sign in</Link>
-      </div>
-    )
-  }
-
-  return (
-    <div className="auth-actions">
-      <Link href="/requests" className="auth-user">{email}</Link>
-      <Link href="/requests" className="auth-link">Control center</Link>
-      <button type="button" onClick={signOut} className="auth-link auth-button">Sign out</button>
-    </div>
-  )
+  return <div style={wrap}>
+    <Link href="/requests" style={{ ...box, maxWidth: 190, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#7f8da7' }}>{email}</Link>
+    <Link href="/requests" style={box}>Control center</Link>
+    <button type="button" onClick={signOut} style={{ ...box, fontFamily: 'inherit', cursor: 'pointer' }}>Sign out</button>
+  </div>
 }
