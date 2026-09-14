@@ -51,12 +51,13 @@ export function calculateRetryDelayMs(
   baseMs = 1000,
   maxMs = 30000,
   jitterRatio = 0.1,
+  jitterFactor = 0.5,
 ): number {
   const normalizedAttempt = Math.max(0, Math.floor(attempt))
   const normalizedJitter = Math.min(1, Math.max(0, jitterRatio))
+  const normalizedFactor = Math.min(1, Math.max(0, jitterFactor))
   const exponential = Math.min(maxMs, baseMs * 2 ** normalizedAttempt)
-  const jitter = exponential * normalizedJitter
-  return Math.round(exponential - jitter + jitter * 2 * 0.5)
+  return Math.round(exponential * (1 + (normalizedFactor * 2 - 1) * normalizedJitter))
 }
 
 export function isRetryablePublishFailure(statusCode?: number): boolean {
