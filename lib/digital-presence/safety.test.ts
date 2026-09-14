@@ -5,7 +5,7 @@ import {
   evaluatePublishPolicy,
   isRetryablePublishFailure,
   redactSecret,
-} from './safety'
+} from './safety.ts'
 
 const ready = { configured: true, ready: true, reasons: [] }
 const unavailable = { configured: false, ready: false, reasons: ['provider_not_configured'] }
