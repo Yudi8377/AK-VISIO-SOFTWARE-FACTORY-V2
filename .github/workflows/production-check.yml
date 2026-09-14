@@ -29,6 +29,9 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Run Digital Presence safety contracts
+        run: npm run test:safety
+
       - name: Build production application
         run: npm run build
         env:
@@ -48,3 +51,16 @@ jobs:
           echo "$body"
           echo "$body" | grep -F '"status":"ok"'
           echo "$body" | grep -F '"service":"ak-visio-software-factory-v2"'
+
+      - name: Smoke test Digital Presence readiness endpoint
+        run: |
+          set -euo pipefail
+          url="https://ak-visio-software-factory-v2.dwahyudi8377.workers.dev/api/digital-presence/status"
+          body="$(curl --fail --silent --show-error --location --max-time 30 "$url")"
+          echo "$body"
+          echo "$body" | grep -F '"status":"ok"'
+          echo "$body" | grep -F '"internalGeneration":true'
+          echo "$body" | grep -F '"liveSerpResearch":false'
+          echo "$body" | grep -F '"externalPublishing":false'
+          echo "$body" | grep -F '"accountCreation":"MANUAL"'
+          echo "$body" | grep -F '"externalPublishing":"SEMI_AUTO"'
