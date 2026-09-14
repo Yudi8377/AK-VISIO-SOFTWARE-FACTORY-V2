@@ -47,9 +47,10 @@ Deno.serve(async (req: Request) => {
 
   if (jobError) return json({ error: 'job_lookup_failed' }, 500)
   if (!job) return json({ error: 'job_not_found' }, 404)
-  if (job.status !== 'QUEUED') return json({ error: 'job_not_queued', status: job.status }, 409)
+  if (job.status !== 'queued') return json({ error: 'job_not_queued', status: job.status }, 409)
   if (job.approval_state !== 'approved') return json({ error: 'approval_required' }, 409)
-  if (job.idempotency_key && job.idempotency_key !== idempotencyKey) return json({ error: 'idempotency_key_mismatch' }, 409)
+  if (!job.idempotency_key) return json({ error: 'idempotency_key_not_registered' }, 409)
+  if (job.idempotency_key !== idempotencyKey) return json({ error: 'idempotency_key_mismatch' }, 409)
 
   const { data: connection, error: connectionError } = job.connection_id
     ? await supabase
@@ -61,12 +62,10 @@ Deno.serve(async (req: Request) => {
     : { data: null, error: null }
 
   if (connectionError) return json({ error: 'connection_lookup_failed' }, 500)
-  if (!connection || connection.status !== 'ACTIVE' || !connection.last_verified_at) {
+  if (!connection || connection.status !== 'connected' || !connection.last_verified_at) {
     return json({ error: 'provider_not_ready', reason: 'connection_not_verified' }, 409)
   }
 
-  // Fail closed until a server-side per-connection secret vault is wired in.
-  // Never read or accept OAuth access tokens from request bodies or public metadata.
   return json({
     error: 'provider_secret_binding_required',
     provider: connection.provider,
