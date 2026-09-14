@@ -46,10 +46,17 @@ export function buildIdempotencyKey(parts: string[]): string {
   return parts.map((part) => part.trim()).filter(Boolean).join(':')
 }
 
-export function calculateRetryDelayMs(attempt: number, baseMs = 1000, maxMs = 30000): number {
+export function calculateRetryDelayMs(
+  attempt: number,
+  baseMs = 1000,
+  maxMs = 30000,
+  jitterRatio = 0.1,
+): number {
   const normalizedAttempt = Math.max(0, Math.floor(attempt))
+  const normalizedJitter = Math.min(1, Math.max(0, jitterRatio))
   const exponential = Math.min(maxMs, baseMs * 2 ** normalizedAttempt)
-  return Math.round(exponential * (0.75 + Math.random() * 0.5))
+  const jitter = exponential * normalizedJitter
+  return Math.round(exponential - jitter + jitter * 2 * 0.5)
 }
 
 export function isRetryablePublishFailure(statusCode?: number): boolean {
