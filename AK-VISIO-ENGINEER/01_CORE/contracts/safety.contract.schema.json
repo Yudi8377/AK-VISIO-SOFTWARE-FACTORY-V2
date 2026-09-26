@@ -1,0 +1,13 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "title":"Safety Contract",
+  "type":"object",
+  "required":["safety_level","requires_human","hazards"],
+  "properties":{
+    "safety_level":{"enum":[0,1,2,3,4,5]},
+    "requires_human":{"type":"boolean"},
+    "hazards":{"type":"array","items":{"type":"string"}},
+    "controls":{"type":"array","items":{"type":"string"}},
+    "approval_required":{"type":"boolean"}
+  }
+}
