@@ -1,0 +1,11 @@
+{
+  "product":"AK VISIO ENGINEER",
+  "product_id":"ak-visio-engineer",
+  "version":"0.1.0",
+  "stage":"FOUNDATION",
+  "offline_first":true,
+  "production_mutation":false,
+  "approval_gates":true,
+  "audit_required":true,
+  "core_components":["runtime","contracts","registry","evidence","audit","approval","safety","health","self-test"]
+}

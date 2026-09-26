@@ -1,0 +1,16 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "title":"Evidence Contract",
+  "type":"object",
+  "required":["evidence_id","case_id","type","captured_at","source"],
+  "properties":{
+    "evidence_id":{"type":"string"},
+    "case_id":{"type":"string"},
+    "type":{"enum":["observation","photo","video","audio","log","measurement","telemetry","screenshot","document"]},
+    "captured_at":{"type":"string","format":"date-time"},
+    "source":{"type":"string"},
+    "operator_id":{"type":["string","null"]},
+    "sha256":{"type":["string","null"]},
+    "provenance":{"type":"object"}
+  }
+}

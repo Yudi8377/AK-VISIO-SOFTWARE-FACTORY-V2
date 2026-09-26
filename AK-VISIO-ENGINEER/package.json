@@ -1,0 +1,20 @@
+{
+  "name": "@ak-visio/engineer",
+  "private": true,
+  "version": "0.1.0",
+  "description": "AK VISIO ENGINEER core foundation",
+  "type": "module",
+  "workspaces": ["apps/*", "packages/*"],
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "node --test",
+    "selftest": "node scripts/self-test.mjs"
+  },
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "devDependencies": {
+    "@types/node": "^24.5.2",
+    "typescript": "^5.9.2"
+  }
+}
