@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AK VISIO ENGINEER Module Contract",
+  "type": "object",
+  "required": ["module_id","module_name","version","platform","capabilities","offline_capabilities","safety_profile","security_profile"],
+  "properties": {
+    "module_id": {"type":"string","pattern":"^[a-z0-9-]+$"},
+    "module_name": {"type":"string","minLength":1},
+    "version": {"type":"string"},
+    "platform": {"type":"array","items":{"type":"string"}},
+    "minimum_runtime": {"type":"string"},
+    "capabilities": {"type":"array","items":{"type":"string"}},
+    "required_adapters": {"type":"array","items":{"type":"string"}},
+    "required_permissions": {"type":"array","items":{"type":"string"}},
+    "offline_capabilities": {"type":"array","items":{"type":"string"}},
+    "online_capabilities": {"type":"array","items":{"type":"string"}},
+    "knowledge_pack_version": {"type":"string"},
+    "diagnostic_pack_version": {"type":"string"},
+    "test_pack_version": {"type":"string"},
+    "safety_profile": {"type":"string"},
+    "security_profile": {"type":"string"},
+    "license": {"type":"string"},
+    "dependencies": {"type":"array","items":{"type":"string"}},
+    "migration_version": {"type":"string"},
+    "rollback_version": {"type":"string"}
+  }
+}
