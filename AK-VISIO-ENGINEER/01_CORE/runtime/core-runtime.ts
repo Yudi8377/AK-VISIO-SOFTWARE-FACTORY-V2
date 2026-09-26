@@ -9,9 +9,9 @@ export function createCoreRuntime() {
     registry,
     health() {
       return summarizeHealth([
-        { name: "module-registry", ok: registry.list().length === builtInModuleCatalog.length },
-        { name: "offline-policy", ok: true },
-        { name: "approval-gate", ok: true }
+        {name:"module-registry",ok:registry.list().length === builtInModuleCatalog.length},
+        {name:"offline-policy",ok:true},
+        {name:"approval-gate",ok:true}
       ]);
     }
   };
