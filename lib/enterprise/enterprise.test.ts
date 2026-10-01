@@ -1,5 +1,5 @@
 import { strict as assert } from 'node:assert'
-import { evaluatePolicy } from './policy'
+import { evaluatePolicy } from './policy.ts'
 
 assert.equal(evaluatePolicy('payment_execution', 'critical').allowed, false)
 assert.equal(evaluatePolicy('payment_execution', 'critical').requiresHumanApproval, true)
