@@ -1,5 +1,5 @@
-import type { BusinessDNA, FactoryArtifact, RiskLevel } from './contracts'
-import { evaluatePolicy } from './policy'
+import type { BusinessDNA, FactoryArtifact, RiskLevel } from './contracts.ts'
+import { evaluatePolicy } from './policy.ts'
 
 export type FactoryIntent = {
   prompt: string
