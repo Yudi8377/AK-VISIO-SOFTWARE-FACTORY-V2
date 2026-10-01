@@ -1,0 +1,15 @@
+version: 1
+default: deny
+principles:
+  - least_privilege
+  - tenant_scope
+  - explicit_capability
+  - audit_high_risk_actions
+  - human_approval_when_required
+high_risk:
+  payment_execution: human_approval
+  tax_submission: human_approval
+  legal_publication: human_approval
+  production_deploy: human_approval
+  destructive_database_change: human_approval
+  bulk_delete: human_approval
