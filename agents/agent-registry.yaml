@@ -1,0 +1,29 @@
+version: 1
+default_policy: deny
+agents:
+  - master-orchestrator
+  - business-architect
+  - product-manager
+  - solution-architect
+  - design-director
+  - frontend-engineer
+  - backend-engineer
+  - database-engineer
+  - mobile-engineer
+  - desktop-engineer
+  - qa-engineer
+  - security-engineer
+  - devops-engineer
+  - data-bi
+  - legal-compliance
+  - tax
+  - cfo
+  - coo
+  - ceo-strategy
+  - hr-chro
+  - sales-crm
+  - customer-service
+  - documentation-training
+  - regulatory-monitoring
+  - whatsapp-omnichannel
+  - ai-cost-metering
