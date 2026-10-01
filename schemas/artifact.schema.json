@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Factory Artifact",
+  "type": "object",
+  "required": [
+    "artifact_id",
+    "type",
+    "business_dna_version",
+    "status"
+  ],
+  "properties": {
+    "artifact_id": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string"
+    },
+    "business_dna_version": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "draft",
+        "generated",
+        "review",
+        "approved",
+        "released",
+        "superseded"
+      ]
+    },
+    "source_refs": {
+      "type": "array"
+    },
+    "approval_refs": {
+      "type": "array"
+    },
+    "license_refs": {
+      "type": "array"
+    },
+    "hash": {
+      "type": "string"
+    }
+  }
+}
