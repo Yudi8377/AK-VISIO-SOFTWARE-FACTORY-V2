@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Business DNA",
+  "type": "object",
+  "required": [
+    "id",
+    "version",
+    "organization",
+    "industry",
+    "jurisdictions",
+    "entities",
+    "processes",
+    "deployment_targets"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "organization": {
+      "type": "object"
+    },
+    "industry": {
+      "type": "string"
+    },
+    "jurisdictions": {
+      "type": "array"
+    },
+    "products_services": {
+      "type": "array"
+    },
+    "channels": {
+      "type": "array"
+    },
+    "entities": {
+      "type": "array"
+    },
+    "processes": {
+      "type": "array"
+    },
+    "workflows": {
+      "type": "array"
+    },
+    "roles": {
+      "type": "array"
+    },
+    "capabilities": {
+      "type": "array"
+    },
+    "documents": {
+      "type": "array"
+    },
+    "tax_profile": {
+      "type": "object"
+    },
+    "regulatory_profile": {
+      "type": "object"
+    },
+    "brand_design": {
+      "type": "object"
+    },
+    "deployment_targets": {
+      "type": "array"
+    }
+  }
+}
