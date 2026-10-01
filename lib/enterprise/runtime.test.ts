@@ -1,5 +1,5 @@
 import { strict as assert } from 'node:assert'
-import { createBusinessDNA, planGeneration, createArtifact } from './runtime'
+import { createBusinessDNA, planGeneration, createArtifact } from './runtime.ts'
 
 const dna = createBusinessDNA({ prompt: 'Build a travel company', organizationId: 'akvisio', requestedTargets: ['web','pwa','android'] })
 assert.equal(dna.organization.name, 'AKVISIO')
