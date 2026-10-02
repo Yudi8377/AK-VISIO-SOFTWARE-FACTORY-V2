@@ -10,9 +10,9 @@ drop policy if exists factory_execution_runs_owner_update on public.factory_exec
 drop policy if exists factory_artifacts_owner_insert on public.factory_artifacts;
 drop policy if exists factory_artifacts_owner_update on public.factory_artifacts;
 drop policy if exists factory_quality_evidence_owner_insert on public.factory_quality_evidence;
-drop policy if exists factory_quality_evidence_owner_update on public.factory_release_candidates;
+drop policy if exists factory_quality_evidence_owner_update on public.factory_quality_evidence;
 drop policy if exists factory_release_candidates_owner_insert on public.factory_release_candidates;
-drop policy if exists factory_release_candidates_owner_update on public.factory_build_evidence;
+drop policy if exists factory_release_candidates_owner_update on public.factory_release_candidates;
 
 drop policy if exists factory_build_evidence_owner_select on public.factory_build_evidence;
 create policy factory_build_evidence_owner_select on public.factory_build_evidence
