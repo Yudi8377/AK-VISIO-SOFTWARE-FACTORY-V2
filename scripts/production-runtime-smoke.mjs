@@ -5,7 +5,8 @@ const checks = [
   { path: '/api/digital-presence/status', status: 200, includes: ['"status":"ok"', '"internalGeneration":true', '"liveSerpResearch":false', '"externalPublishing":false'] },
   { path: '/', status: 200, includes: ['AK VISIO', 'SOFTWARE FACTORY V2'] },
   { path: '/recovery', status: 308, includes: [] },
-  { path: '/api/factory/recovery-incidents', status: 401, includes: ['"error":"authentication_required"'] },\n  { path: '/api/factory/audit-events', status: 401, includes: ['"error":"authentication_required"'] },
+  { path: '/api/factory/recovery-incidents', status: 401, includes: ['"error":"authentication_required"'] },
+  { path: '/api/factory/audit-events', status: 401, includes: ['"error":"authentication_required"'] },
 ]
 
 const failures = []
@@ -25,7 +26,8 @@ for (const check of checks) {
 }
 
 if (failures.length) {
-  console.error(failures.join('\n'))
+  console.error(failures.join('
+'))
   process.exit(1)
 }
 
