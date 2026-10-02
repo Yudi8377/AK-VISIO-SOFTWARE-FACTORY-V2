@@ -50,7 +50,7 @@ function stable(value: unknown): string {
 function hash(value: unknown): string { return createHash('sha256').update(stable(value)).digest('hex') }
 
 export function computeApprovalHash(input: Pick<ReleaseApproval, 'releaseCandidateId' | 'buildId' | 'executionId' | 'organizationId' | 'ownerId' | 'environment' | 'packageFingerprint' | 'approvedBy' | 'status'>): string {
-  return hash(input)
+  return hash({ releaseCandidateId: input.releaseCandidateId, buildId: input.buildId, executionId: input.executionId, organizationId: input.organizationId, ownerId: input.ownerId, environment: input.environment, packageFingerprint: input.packageFingerprint, approvedBy: input.approvedBy, status: input.status })
 }
 export function createReleaseApproval(input: Omit<ReleaseApproval, 'approvalId' | 'approvalHash' | 'approvedAt'>): ReleaseApproval {
   const approvalHash = computeApprovalHash(input)
