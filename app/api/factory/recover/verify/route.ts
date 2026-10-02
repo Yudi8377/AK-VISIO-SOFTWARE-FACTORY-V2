@@ -4,7 +4,6 @@ import { verifyDeployment } from '@/lib/enterprise/verification'
 import { assertTrustedRecoveryInvocation } from '@/lib/enterprise/recovery'
 import { getTrustedRecoveryContext, persistDeploymentVerification, persistDeploymentState } from '@/lib/enterprise/release-deployment-repository'
 import { assertDeploymentTransition, computeDeploymentStateHash } from '@/lib/enterprise/deployment-state'
-import { createRecoveryIncidentKey } from '@/lib/enterprise/self-healing'
 import { markRecoveryFailure, markRecoveryRecovered } from '@/lib/enterprise/self-healing-repository'
 
 export async function POST(request: Request) {
