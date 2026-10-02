@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { createDeploymentRequest, signDeploymentRequest, type DeploymentEvidence } from '@/lib/enterprise/deployment'
+import { createDeploymentRequest, type DeploymentEvidence } from '@/lib/enterprise/deployment'
 import { getOwnedReleaseApproval, getOwnedReleasePackage, persistDeploymentEvidence } from '@/lib/enterprise/release-deployment-repository'
 import { createServerSupabaseClient } from '@/lib/supabase-server'\nimport { getOwnedDeploymentEvidence, getLatestOwnedDeploymentState, persistDeploymentState } from '@/lib/enterprise/release-deployment-repository'\nimport { assertVerifiedDeployment, computeDeploymentStateHash } from '@/lib/enterprise/deployment-state'
 
