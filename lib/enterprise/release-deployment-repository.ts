@@ -131,6 +131,56 @@ export async function persistPromotionEvidence(input: {
   if (error) throw error
 }
 
+export async function getTrustedRecoveryContext(ownerId: string, currentDeploymentId: string, targetDeploymentId: string) {
+  const supabase = createServerSupabaseAdminClient()
+  const [currentResult, targetResult, currentStateResult, targetStateResult] = await Promise.all([
+    supabase.from('factory_deployment_evidence').select('*').eq('owner_id', ownerId).eq('deployment_id', currentDeploymentId).maybeSingle(),
+    supabase.from('factory_deployment_evidence').select('*').eq('owner_id', ownerId).eq('deployment_id', targetDeploymentId).maybeSingle(),
+    supabase.from('factory_deployment_state').select('*').eq('owner_id', ownerId).eq('deployment_id', currentDeploymentId).order('changed_at', { ascending: false }).limit(1).maybeSingle(),
+    supabase.from('factory_deployment_state').select('*').eq('owner_id', ownerId).eq('deployment_id', targetDeploymentId).order('changed_at', { ascending: false }).limit(1).maybeSingle(),
+  ])
+  for (const result of [currentResult, targetResult, currentStateResult, targetStateResult]) if (result.error) throw result.error
+  return {
+    current: currentResult.data ? deploymentFromRow(currentResult.data) : null,
+    target: targetResult.data ? deploymentFromRow(targetResult.data) : null,
+    currentState: currentStateResult.data ? { deploymentId: String(currentStateResult.data.deployment_id), state: currentStateResult.data.state as DeploymentLifecycleState, organizationId: String(currentStateResult.data.organization_id), environment: String(currentStateResult.data.environment) } : null,
+    targetState: targetStateResult.data ? { deploymentId: String(targetStateResult.data.deployment_id), state: targetStateResult.data.state as DeploymentLifecycleState, organizationId: String(targetStateResult.data.organization_id), environment: String(targetStateResult.data.environment) } : null,
+  }
+}
+
+export async function getTrustedReleasePackage(ownerId: string, releaseCandidateId: string, buildId: string) {
+  const supabase = createServerSupabaseAdminClient()
+  const [candidateResult, buildResult] = await Promise.all([
+    supabase.from('factory_release_candidates').select('*').eq('owner_id', ownerId).eq('release_candidate_id', releaseCandidateId).maybeSingle(),
+    supabase.from('factory_build_evidence').select('*').eq('owner_id', ownerId).eq('build_id', buildId).maybeSingle(),
+  ])
+  if (candidateResult.error) throw candidateResult.error
+  if (buildResult.error) throw buildResult.error
+  if (!candidateResult.data || !buildResult.data) return null
+  return { candidate: candidateFromRow(candidateResult.data), build: buildFromRow(buildResult.data) }
+}
+
+export async function getTrustedReleaseApproval(ownerId: string, approvalId: string) {
+  const supabase = createServerSupabaseAdminClient()
+  const { data, error } = await supabase.from('factory_release_approvals').select('*').eq('owner_id', ownerId).eq('approval_id', approvalId).maybeSingle()
+  if (error) throw error
+  return data ? approvalFromRow(data) : null
+}
+
+export async function getTrustedRecoveryEvidence(ownerId: string, recoveryId: string) {
+  const supabase = createServerSupabaseAdminClient()
+  const { data, error } = await supabase.from('factory_recovery_evidence').select('*').eq('owner_id', ownerId).eq('recovery_id', recoveryId).maybeSingle()
+  if (error) throw error
+  return data
+}
+
+export async function getOwnedRecoveryEvidence(ownerId: string, recoveryId: string) {
+  const supabase = await createServerSupabaseClient()
+  const { data, error } = await supabase.from('factory_recovery_evidence').select('*').eq('owner_id', ownerId).eq('recovery_id', recoveryId).maybeSingle()
+  if (error) throw error
+  return data
+}
+
 export async function listOwnedReleaseApprovals(ownerId: string) {
   const supabase = await createServerSupabaseClient()
   const { data, error } = await supabase.from('factory_release_approvals').select('*').eq('owner_id', ownerId).order('approved_at', { ascending: false }).limit(200)
