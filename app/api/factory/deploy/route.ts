@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createDeploymentRequest, type DeploymentEvidence } from '@/lib/enterprise/deployment'
 import { getOwnedReleaseApproval, getOwnedReleasePackage, persistDeploymentEvidence } from '@/lib/enterprise/release-deployment-repository'
-import { createServerSupabaseClient } from '@/lib/supabase-server'\nimport { persistDeploymentState } from '@/lib/enterprise/release-deployment-repository'\nimport { assertDeploymentTransition, computeDeploymentStateHash } from '@/lib/enterprise/deployment-state'\nimport { executeConfiguredProvider } from '@/lib/enterprise/provider'
+import { createServerSupabaseClient } from '@/lib/supabase-server'\nimport { persistDeploymentState } from '@/lib/enterprise/release-deployment-repository'\nimport { computeDeploymentStateHash } from '@/lib/enterprise/deployment-state'\nimport { executeConfiguredProvider } from '@/lib/enterprise/provider'
 
 export async function POST(request: Request) {
   const supabase = await createServerSupabaseClient()
@@ -23,6 +23,7 @@ export async function POST(request: Request) {
   } catch (err) {
     return NextResponse.json({ error: err instanceof Error ? err.message : 'deployment_gate_failed' }, { status: 422 })
   }
+  await persistDeploymentState({ deploymentId: reqData.deploymentId, ownerId: user.id, organizationId: approval.organizationId, environment, state: 'requested', transitionAction: 'request', evidenceHash: reqData.requestHash, stateHash: computeDeploymentStateHash({ deploymentId: reqData.deploymentId, state: 'requested', action: 'request', evidenceHash: reqData.requestHash, changedAt: new Date().toISOString() }) })
   const startedAt = new Date().toISOString()
   const payload = JSON.stringify(reqData.body)
   const signature = signDeploymentRequest(payload, webhookSecret)
