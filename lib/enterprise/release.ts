@@ -30,6 +30,15 @@ function hash(value: unknown) {
   return createHash('sha256').update(stable(value)).digest('hex')
 }
 
+export function computeReleaseCandidateHash(candidate: Pick<ReleaseCandidate, 'executionId' | 'artifactIds' | 'qualityEvidenceId' | 'qualityEvidenceHash' | 'releaseEngineVersion' | 'status'>): string {
+  return hash({ executionId: candidate.executionId, artifactIds: [...candidate.artifactIds].sort(), qualityEvidenceId: candidate.qualityEvidenceId, qualityEvidenceHash: candidate.qualityEvidenceHash, releaseEngineVersion: candidate.releaseEngineVersion, status: candidate.status })
+}
+
+export function assertReleaseCandidateIntegrity(candidate: ReleaseCandidate): void {
+  const expected = computeReleaseCandidateHash(candidate)
+  if (candidate.candidateHash !== expected || candidate.releaseCandidateId !== 'rc-' + expected.slice(0, 24)) throw new Error('release_candidate_integrity_failed')
+}
+
 export function createReleaseCandidate(
   executionId: string,
   artifacts: GeneratedArtifact[],
@@ -72,6 +81,7 @@ export function markBuildResult(candidate: ReleaseCandidate, passed: boolean): R
 }
 
 export function assertReleaseEligible(candidate: ReleaseCandidate): void {
+  assertReleaseCandidateIntegrity(candidate)
   if (candidate.status !== 'eligible' || candidate.buildStatus !== 'passed') {
     throw new Error('release_gate_failed')
   }
