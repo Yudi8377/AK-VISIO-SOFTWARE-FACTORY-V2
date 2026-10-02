@@ -50,7 +50,7 @@ assert.throws(() => executeBuild({
   sourceRevision: 'test-revision',
 }), /build_artifact_integrity_failed/)
 
-const blocked = { ...candidate, status: 'blocked' as const }
+const blocked = createReleaseCandidate(result.executionId, result.artifacts, { ...evidence, status: 'failed', releaseCandidateEligible: false })
 assert.throws(() => executeBuild({
   candidate: blocked,
   artifactHashes,
