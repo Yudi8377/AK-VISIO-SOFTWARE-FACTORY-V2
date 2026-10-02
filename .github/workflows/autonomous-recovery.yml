@@ -13,22 +13,58 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Run trusted autonomous recovery gate
+      - name: Scan production deployments
         env:
           RECOVERY_URL: ${{ secrets.AUTONOMOUS_RECOVERY_URL }}
           RECOVERY_SECRET: ${{ secrets.AUTONOMOUS_RECOVERY_SECRET }}
           OWNER_ID: ${{ secrets.AUTONOMOUS_RECOVERY_OWNER_ID }}
-          CURRENT_DEPLOYMENT_ID: ${{ secrets.AUTONOMOUS_RECOVERY_CURRENT_DEPLOYMENT_ID }}
-          TARGET_DEPLOYMENT_ID: ${{ secrets.AUTONOMOUS_RECOVERY_TARGET_DEPLOYMENT_ID }}
           ORGANIZATION_ID: ${{ secrets.AUTONOMOUS_RECOVERY_ORGANIZATION_ID }}
           ENVIRONMENT: ${{ secrets.AUTONOMOUS_RECOVERY_ENVIRONMENT }}
         run: |
           set -euo pipefail
-          test -n "$RECOVERY_URL"
-          test -n "$RECOVERY_SECRET"
-          test -n "$OWNER_ID"
-          test -n "$CURRENT_DEPLOYMENT_ID"
-          test -n "$TARGET_DEPLOYMENT_ID"
-          test -n "$ORGANIZATION_ID"
-          test -n "$ENVIRONMENT"
-          curl --fail --silent --show-error --location --max-time 45             -X POST "$RECOVERY_URL/api/factory/recover"             -H 'content-type: application/json'             -H "x-autonomous-recovery-secret: $RECOVERY_SECRET"             --data "{"ownerId":"$OWNER_ID","currentDeploymentId":"$CURRENT_DEPLOYMENT_ID","targetDeploymentId":"$TARGET_DEPLOYMENT_ID","organizationId":"$ORGANIZATION_ID","environment":"$ENVIRONMENT"}"
+          test -n "$RECOVERY_URL" && test -n "$RECOVERY_SECRET" && test -n "$OWNER_ID" && test -n "$ORGANIZATION_ID" && test -n "$ENVIRONMENT"
+          response="$(curl --fail --silent --show-error --location --max-time 45 \
+            -X POST "$RECOVERY_URL/api/factory/recover/scan" \
+            -H 'content-type: application/json' \
+            -H "x-autonomous-recovery-secret: $RECOVERY_SECRET" \
+            --data "{"ownerId":"$OWNER_ID","organizationId":"$ORGANIZATION_ID","environment":"$ENVIRONMENT"}")"
+          echo "$response"
+          echo "$response" > scan.json
+
+      - name: Execute recovery when candidate exists
+        env:
+          RECOVERY_URL: ${{ secrets.AUTONOMOUS_RECOVERY_URL }}
+          RECOVERY_SECRET: ${{ secrets.AUTONOMOUS_RECOVERY_SECRET }}
+          OWNER_ID: ${{ secrets.AUTONOMOUS_RECOVERY_OWNER_ID }}
+        run: |
+          set -euo pipefail
+          if grep -q '"recovery":"candidate_found"' scan.json; then
+            current="$(python3 -c 'import json; print(json.load(open("scan.json"))["currentDeploymentId"])')"
+            target="$(python3 -c 'import json; print(json.load(open("scan.json"))["targetDeploymentId"])')"
+            organization="$(python3 -c 'import json; print(json.load(open("scan.json"))["organizationId"])')"
+            environment="$(python3 -c 'import json; print(json.load(open("scan.json"))["environment"])')"
+            response="$(curl --fail --silent --show-error --location --max-time 60 \
+              -X POST "$RECOVERY_URL/api/factory/recover" \
+              -H 'content-type: application/json' \
+              -H "x-autonomous-recovery-secret: $RECOVERY_SECRET" \
+              --data "{"ownerId":"$OWNER_ID","currentDeploymentId":"$current","targetDeploymentId":"$target","organizationId":"$organization","environment":"$environment"}")"
+            echo "$response"
+            echo "$response" > recovery.json
+          else
+            echo "No recovery candidate."
+          fi
+
+      - name: Verify successful autonomous recovery
+        if: hashFiles('recovery.json') != ''
+        env:
+          RECOVERY_URL: ${{ secrets.AUTONOMOUS_RECOVERY_URL }}
+          RECOVERY_SECRET: ${{ secrets.AUTONOMOUS_RECOVERY_SECRET }}
+          OWNER_ID: ${{ secrets.AUTONOMOUS_RECOVERY_OWNER_ID }}
+        run: |
+          set -euo pipefail
+          deployment="$(python3 -c 'import json; print(json.load(open("recovery.json"))["evidence"]["deploymentId"])')"
+          curl --fail --silent --show-error --location --max-time 60 \
+            -X POST "$RECOVERY_URL/api/factory/recover/verify" \
+            -H 'content-type: application/json' \
+            -H "x-autonomous-recovery-secret: $RECOVERY_SECRET" \
+            --data "{"ownerId":"$OWNER_ID","deploymentId":"$deployment"}"
