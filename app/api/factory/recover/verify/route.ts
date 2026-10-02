@@ -23,8 +23,7 @@ export async function POST(request: Request) {
   const result = await verifyDeployment({ deploymentId: String(body.deploymentId), providerReference: String(evidenceRow.provider_reference) })
   await persistDeploymentVerification(String(body.ownerId), String(body.deploymentId), result)
 
-  const rollbackTargetId = evidenceRow.action === 'rollback' ? String(evidenceRow.rollback_target_deployment_id ?? '') : ''
-  const incidentKey = evidenceRow.action === 'rollback' && rollbackTargetId ? createRecoveryIncidentKey({ ownerId:String(body.ownerId), organizationId:String(evidenceRow.organization_id), environment:String(evidenceRow.environment), currentDeploymentId:rollbackTargetId, targetDeploymentId:String(evidenceRow.deployment_id) }) : null
+  const incidentKey = evidenceRow.action === 'rollback' && evidenceRow.recovery_incident_key ? String(evidenceRow.recovery_incident_key) : null
   if (result.status !== 'passed') {
     await persistDeploymentState({
       deploymentId: String(body.deploymentId), ownerId: String(body.ownerId), organizationId: String(evidenceRow.organization_id), environment: String(evidenceRow.environment),
