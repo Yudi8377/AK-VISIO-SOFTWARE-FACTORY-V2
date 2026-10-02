@@ -22,6 +22,9 @@ assert.equal(evidence.status, 'passed')
 const candidate = createReleaseCandidate(result.executionId, result.artifacts, evidence)
 assert.equal(candidate.status, 'eligible')
 
+const tamperedCandidate = { ...candidate, candidateHash: '0'.repeat(64) }
+assert.throws(() => executeBuild({ candidate: tamperedCandidate, artifactHashes: result.artifacts.map(a => ({ artifactId: a.artifactId, contentHash: a.contentHash })), qualityEvidenceHash: evidence.evidenceHash, sourceRevision: 'test-revision' }), /release_candidate_integrity_failed/)
+
 const artifactHashes = result.artifacts.map(a => ({ artifactId: a.artifactId, contentHash: a.contentHash }))
 const build = executeBuild({
   candidate,
