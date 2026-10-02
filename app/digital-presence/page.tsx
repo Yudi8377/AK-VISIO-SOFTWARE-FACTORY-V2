@@ -1,21 +1,21 @@
 import Link from 'next/link'
 
 const keywordPlan = [
-  ['TOFU', 'desain interior rumah', 'Informational'],
-  ['TOFU', 'inspirasi interior rumah', 'Informational'],
-  ['TOFU', 'interior minimalis', 'Informational'],
-  ['MOFU', 'jasa desain interior Jakarta', 'Commercial'],
-  ['MOFU', 'custom furniture Jakarta', 'Commercial'],
-  ['MOFU', 'jasa kitchen set Jakarta', 'Commercial'],
-  ['BOFU', 'konsultasi interior Jakarta', 'Transactional'],
-  ['BOFU', 'harga jasa desain interior Jakarta', 'Transactional'],
-  ['BOFU', 'jasa interior custom Jakarta', 'Transactional'],
-  ['BOFU', 'desain interior kantor Jakarta', 'Commercial'],
+  ['TOFU', 'desain interior rumah', 'Informasional'],
+  ['TOFU', 'inspirasi interior rumah', 'Informasional'],
+  ['TOFU', 'interior minimalis', 'Informasional'],
+  ['MOFU', 'jasa desain interior Jakarta', 'Komersial'],
+  ['MOFU', 'custom furniture Jakarta', 'Komersial'],
+  ['MOFU', 'jasa kitchen set Jakarta', 'Komersial'],
+  ['BOFU', 'konsultasi interior Jakarta', 'Transaksional'],
+  ['BOFU', 'harga jasa desain interior Jakarta', 'Transaksional'],
+  ['BOFU', 'jasa interior custom Jakarta', 'Transaksional'],
+  ['BOFU', 'desain interior kantor Jakarta', 'Komersial'],
 ]
 
 const channels = [
-  ['Instagram', 'Ready for connector', 'Buat profil + konten 30 hari'],
-  ['Facebook', 'Ready for connector', 'Salinan halaman + antrean publikasi'],
+  ['Instagram', 'Siap untuk connector', 'Buat profil + konten 30 hari'],
+  ['Facebook', 'Siap untuk connector', 'Salinan halaman + antrean publikasi'],
   ['TikTok', 'Siap dihubungkan', 'Hook dan skrip konten singkat'],
   ['Pinterest', 'Siap dihubungkan', 'Papan + brief visual'],
   ['YouTube', 'Siap dihubungkan', 'Judul + deskripsi video'],
