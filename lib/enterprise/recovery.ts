@@ -31,6 +31,7 @@ export function createRecoveryExecution(input: {
   provider: string
   decisionId: string
   evidenceHash: string
+  attempt?: number
 }) {
   const payload = {
     currentDeploymentId: input.currentDeploymentId,
@@ -41,6 +42,7 @@ export function createRecoveryExecution(input: {
     decisionId: input.decisionId,
     evidenceHash: input.evidenceHash,
     recoveryEngineVersion: RECOVERY_ENGINE_VERSION,
+    attempt: input.attempt ?? 1,
   }
   const requestHash = hash(payload)
   return {

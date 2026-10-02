@@ -4,6 +4,8 @@ import { verifyDeployment } from '@/lib/enterprise/verification'
 import { assertTrustedRecoveryInvocation } from '@/lib/enterprise/recovery'
 import { getTrustedRecoveryContext, persistDeploymentVerification, persistDeploymentState } from '@/lib/enterprise/release-deployment-repository'
 import { assertDeploymentTransition, computeDeploymentStateHash } from '@/lib/enterprise/deployment-state'
+import { createRecoveryIncidentKey } from '@/lib/enterprise/self-healing'
+import { markRecoveryFailure, markRecoveryRecovered } from '@/lib/enterprise/self-healing-repository'
 
 export async function POST(request: Request) {
   try { assertTrustedRecoveryInvocation(process.env.AUTONOMOUS_RECOVERY_SECRET, request.headers.get('x-autonomous-recovery-secret')) }
@@ -21,12 +23,15 @@ export async function POST(request: Request) {
   const result = await verifyDeployment({ deploymentId: String(body.deploymentId), providerReference: String(evidenceRow.provider_reference) })
   await persistDeploymentVerification(String(body.ownerId), String(body.deploymentId), result)
 
+  const rollbackTargetId = evidenceRow.action === 'rollback' ? String(evidenceRow.rollback_target_deployment_id ?? '') : ''
+  const incidentKey = evidenceRow.action === 'rollback' && rollbackTargetId ? createRecoveryIncidentKey({ ownerId:String(body.ownerId), organizationId:String(evidenceRow.organization_id), environment:String(evidenceRow.environment), currentDeploymentId:rollbackTargetId, targetDeploymentId:String(evidenceRow.deployment_id) }) : null
   if (result.status !== 'passed') {
     await persistDeploymentState({
       deploymentId: String(body.deploymentId), ownerId: String(body.ownerId), organizationId: String(evidenceRow.organization_id), environment: String(evidenceRow.environment),
       state: 'failed', previousState: 'provider_accepted', transitionAction: 'fail', evidenceHash: result.evidenceHash,
       stateHash: computeDeploymentStateHash({ deploymentId: String(body.deploymentId), state: 'failed', action: 'fail', evidenceHash: result.evidenceHash, changedAt: result.checkedAt }),
     })
+    if (incidentKey) await markRecoveryFailure(String(body.ownerId), incidentKey, '', `recovery_verification_${result.status}`)
     return NextResponse.json({ verified: false, verification: result }, { status: 502 })
   }
 
@@ -46,5 +51,6 @@ export async function POST(request: Request) {
     })
   }
 
+  if (incidentKey) await markRecoveryRecovered(String(body.ownerId), incidentKey, String(body.deploymentId))
   return NextResponse.json({ verified: true, verification: result })
 }
