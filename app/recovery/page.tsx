@@ -12,7 +12,7 @@ type Incident = {
   targetDeploymentId: string
   status: 'detected' | 'recovering' | 'recovered' | 'escalated' | 'suppressed'
   attemptCount: number
-  maxAttempts: number
+  maxPercobaan: number
   cooldownUntil: string | null
   leaseUntil: string | null
   lastRecoveryId: string | null
@@ -48,7 +48,7 @@ export default function Recovery() {
     const response = await fetch(query, { cache: 'no-store' })
     if (response.status === 401) { window.location.assign('/login'); return }
     const body = await response.json().catch(() => ({}))
-    if (!response.ok) { setMessage(body.error || 'Unable to load recovery incidents'); setLoading(false); return }
+    if (!response.ok) { setMessage(body.error || 'Tidak dapat memuat insiden pemulihan'); setLoading(false); return }
     setIncidents(body.incidents || [])
     setSummary(body.summary || initialSummary)
     setLoading(false)
@@ -62,26 +62,26 @@ export default function Recovery() {
 
   return <main className="shell">
     <header className="topbar">
-      <div><strong>SELF-HEALING</strong><span> INCIDENT CONTROL</span></div>
-      <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}><Link href="/">Overview</Link><Link href="/repairs">Repairs</Link></div>
+      <div><strong>SELF-HEALING</strong><span> KENDALI INSIDEN</span></div>
+      <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}><Link href="/">Ikhtisar</Link><Link href="/repairs">Perbaikan</Link></div>
     </header>
 
     <section className="hero" style={{ gridTemplateColumns: '1fr' }}>
       <div>
-        <p className="eyebrow">PRODUCTION RECOVERY OBSERVABILITY</p>
-        <h1 style={{ fontSize: 'clamp(40px,6vw,64px)' }}>Incident Control</h1>
-        <p className="lede">Owner-scoped visibility into autonomous recovery state, attempts, cooldowns, verification lineage and escalation. Recovery execution remains trusted-secret only.</p>
+        <p className="eyebrow">OBSERVABILITAS PEMULIHAN PRODUKSI</p>
+        <h1 style={{ fontSize: 'clamp(40px,6vw,64px)' }}>Kendali Insiden</h1>
+        <p className="lede">Visibilitas berdasarkan pemilik atas status pemulihan otomatis, percobaan, cooldown, lineage verifikasi, dan eskalasi. Eksekusi pemulihan tetap hanya melalui trusted secret.</p>
       </div>
     </section>
 
     <section className="panel">
       <div className="panel-head">
-        <div><span className="section-label">INCIDENT SUMMARY</span><h3>{summary.total} incidents in view</h3></div>
+        <div><span className="section-label">RINGKASAN INSIDEN</span><h3>{summary.total} insiden ditampilkan</h3></div>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           <select value={filter} onChange={e => setFilter(e.target.value)} style={{ background: '#0c121e', color: '#b9c5db', border: '1px solid #26324b', borderRadius: 8, padding: '9px 10px' }}>
-            <option value="">All states</option><option value="detected">Detected</option><option value="recovering">Recovering</option><option value="recovered">Recovered</option><option value="suppressed">Suppressed</option><option value="escalated">Escalated</option>
+            <option value="">Semua status</option><option value="detected">Terdeteksi</option><option value="recovering">Sedang memulihkan</option><option value="recovered">Berhasil dipulihkan</option><option value="suppressed">Ditekan</option><option value="escalated">Dieskalasikan</option>
           </select>
-          <button type="button" onClick={() => void load()} style={{ background: '#121b2b', color: '#d9e2f4', border: '1px solid #2c3a57', borderRadius: 8, padding: '9px 12px', cursor: 'pointer' }}>Refresh</button>
+          <button type="button" onClick={() => void load()} style={{ background: '#121b2b', color: '#d9e2f4', border: '1px solid #2c3a57', borderRadius: 8, padding: '9px 12px', cursor: 'pointer' }}>Segarkan</button>
         </div>
       </div>
 
@@ -92,13 +92,13 @@ export default function Recovery() {
       </div>
 
       {message && <p role="alert">{message}</p>}
-      {loading ? <p>Loading secure incident control…</p> : incidents.length === 0 ? <p>No recovery incidents match the selected state.</p> : <div style={{ overflowX: 'auto' }}>
+      {loading ? <p>Memuat kendali insiden aman…</p> : incidents.length === 0 ? <p>Tidak ada insiden pemulihan yang sesuai dengan status yang dipilih.</p> : <div style={{ overflowX: 'auto' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead><tr>{['Status','Environment','Attempts','Current','Target','Last error','Updated'].map(c => <th key={c} style={{ textAlign: 'left', padding: 12, borderBottom: '1px solid #26324b', whiteSpace: 'nowrap' }}>{c}</th>)}</tr></thead>
+          <thead><tr>{['Status','Lingkungan','Percobaan','Saat ini','Target','Kesalahan terakhir','Diperbarui'].map(c => <th key={c} style={{ textAlign: 'left', padding: 12, borderBottom: '1px solid #26324b', whiteSpace: 'nowrap' }}>{c}</th>)}</tr></thead>
           <tbody>{incidents.map(item => <tr key={item.id}>
             <td style={{ padding: 12, borderBottom: '1px solid #19243a' }}><strong>{statusLabel(item.status)}</strong><div style={{ color: '#65738d', fontSize: 11 }}>{item.incidentKey}</div></td>
             <td style={{ padding: 12, borderBottom: '1px solid #19243a' }}>{item.environment}<div style={{ color: '#65738d', fontSize: 11 }}>{item.organizationId}</div></td>
-            <td style={{ padding: 12, borderBottom: '1px solid #19243a' }}>{item.attemptCount} / {item.maxAttempts}</td>
+            <td style={{ padding: 12, borderBottom: '1px solid #19243a' }}>{item.attemptCount} / {item.maxPercobaan}</td>
             <td style={{ padding: 12, borderBottom: '1px solid #19243a', fontFamily: 'monospace', fontSize: 11 }}>{item.currentDeploymentId}</td>
             <td style={{ padding: 12, borderBottom: '1px solid #19243a', fontFamily: 'monospace', fontSize: 11 }}>{item.targetDeploymentId}</td>
             <td style={{ padding: 12, borderBottom: '1px solid #19243a', maxWidth: 320, color: item.lastError ? '#d9a7a7' : '#65738d' }}>{item.lastError || '—'}</td>
@@ -106,7 +106,7 @@ export default function Recovery() {
           </tr>)}</tbody>
         </table>
       </div>}
-      <p style={{ color: '#596983', fontSize: 11, marginTop: 18 }}>Auto-refresh: 30 seconds · Recovery execution is not exposed from this dashboard.</p>
+      <p style={{ color: '#596983', fontSize: 11, marginTop: 18 }}>Pembaruan otomatis: 30 detik · Eksekusi pemulihan tidak tersedia sebagai aksi dari dashboard ini.</p>
     </section>
   </main>
 }
