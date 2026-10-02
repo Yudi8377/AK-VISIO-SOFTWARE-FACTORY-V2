@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { executeGeneration } from '@/lib/enterprise/execution'
+import { persistQualityEvidence } from '@/lib/enterprise/quality-repository'
 import { validateFactoryArtifacts } from '@/lib/enterprise/qa'
 import { createServerSupabaseClient } from '@/lib/supabase-server'
 
@@ -32,6 +33,17 @@ export async function POST(request: Request) {
     businessDna: result.plan.businessDna,
     artifacts: result.artifacts,
   })
+
+  try {
+    await persistQualityEvidence(user.id, String(body.organizationId), evidence)
+  } catch (error) {
+    return NextResponse.json({
+      error: 'quality_evidence_persistence_failed',
+      detail: error instanceof Error ? error.message : 'unknown_error',
+      executionId: result.executionId,
+      evidence,
+    }, { status: 500 })
+  }
 
   return NextResponse.json({ executionId: result.executionId, evidence }, { status: evidence.status === 'passed' ? 200 : 422 })
 }
