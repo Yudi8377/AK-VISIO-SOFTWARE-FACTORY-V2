@@ -45,3 +45,7 @@ Superseding an artifact is terminal. Invalid transitions fail closed.
 ## Release rule
 
 Artifact persistence is not equivalent to release readiness. QA/security, validator evidence, approval and production-health gates remain separate stages.
+
+## Checkpoint
+
+Implementation branch checkpoint: Factory Execution + Artifact Registry contract slice.
