@@ -1,6 +1,7 @@
 import { createServerSupabaseAdminClient, createServerSupabaseClient } from '@/lib/supabase-server'
 import type { ReleaseApproval, DeploymentEvidence } from './deployment.ts'
-import type { ReleaseCandidate } from './release.ts'\nimport type { DeploymentLifecycleState, DeploymentLifecycleAction } from './deployment-state.ts'
+import type { ReleaseCandidate } from './release.ts'
+import type { DeploymentLifecycleState, DeploymentLifecycleAction } from './deployment-state.ts'
 import type { BuildEvidence } from './build.ts'
 
 function candidateFromRow(row: Record<string, unknown>): ReleaseCandidate {
