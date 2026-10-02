@@ -16,6 +16,7 @@ import { assessDeploymentHealth } from '@/lib/enterprise/monitoring'
 import { computeDeploymentStateHash } from '@/lib/enterprise/deployment-state'
 import { acquireRecoveryIncident, markRecoveryFailure, markRecoveryStarted } from '@/lib/enterprise/self-healing-repository'
 import { createRecoveryIncidentKey } from '@/lib/enterprise/self-healing'
+import { appendAuditEvent } from '@/lib/enterprise/audit-ledger'
 
 async function persistRecoveryEvidence(input: {
   recoveryId: string
@@ -99,6 +100,7 @@ export async function POST(request: Request) {
   if (!incident.acquired) return NextResponse.json({ recovery: 'suppressed', reason: incident.reason, status: 'status' in incident ? incident.status : undefined, incident: 'incident' in incident ? incident.incident : undefined, health }, { status: 200 })
 
   const incidentKey = createRecoveryIncidentKey({ ownerId, organizationId, environment, currentDeploymentId, targetDeploymentId })
+  await appendAuditEvent({ ownerId, organizationId, environment, eventType: 'recovery.detected', aggregateType: 'recovery-incident', aggregateId: incidentKey, actorType: 'scheduler', payload: { currentDeploymentId, targetDeploymentId, health: health.health, evidenceHash: decision.evidenceHash } })
   const leaseToken = String(incident.incident.lease_token)
   const execution = createRecoveryExecution({
     currentDeploymentId,
@@ -223,6 +225,7 @@ export async function POST(request: Request) {
   })
 
   if (status !== 'succeeded') await markRecoveryFailure(ownerId, incidentKey, leaseToken, providerReference)
+  await appendAuditEvent({ ownerId, organizationId, environment, eventType: status === 'succeeded' ? 'recovery.provider_accepted' : 'recovery.failed', aggregateType: 'recovery-execution', aggregateId: execution.recoveryId, actorType: 'scheduler', payload: { deploymentId: evidence.deploymentId, currentDeploymentId, targetDeploymentId, status, provider: target.provider } })
 
   return NextResponse.json({
     recoveryId: execution.recoveryId,

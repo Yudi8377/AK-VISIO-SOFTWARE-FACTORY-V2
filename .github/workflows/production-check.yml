@@ -52,6 +52,8 @@ jobs:
           for i in {1..20}; do curl --silent --fail http://127.0.0.1:3000/api/health >/dev/null && break; sleep 1; done
       - name: Verify production security headers
         run: npm run test:security-headers
+      - name: Verify audit ledger authentication boundary
+        run: npm run test:audit-runtime
 
       - name: Smoke test production health endpoint
         run: |
