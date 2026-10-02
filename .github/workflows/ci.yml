@@ -31,6 +31,9 @@ jobs:
       - name: Run Digital Presence safety contracts
         run: npm run test:safety
 
+      - name: Run self-healing control-plane tests
+        run: npm run test:self-healing
+
       - name: Build Next.js application
         run: npm run build
         env:
