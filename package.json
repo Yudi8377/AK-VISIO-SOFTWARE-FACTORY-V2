@@ -18,7 +18,7 @@
     "test:release": "node --experimental-strip-types lib/enterprise/release.test.ts",
     "test:build": "node --experimental-strip-types lib/enterprise/build.test.ts",
     "test:deployment": "node --experimental-strip-types lib/enterprise/deployment.test.ts",
-    "test:promotion": "node --experimental-strip-types lib/enterprise/promotion.test.ts"
+    "test:promotion": "node --experimental-strip-types lib/enterprise/promotion.test.ts",\n    "test:deployment-state": "node --experimental-strip-types lib/enterprise/deployment-state.test.ts"
   },
   "dependencies": {
     "@supabase/ssr": "0.12.7",
