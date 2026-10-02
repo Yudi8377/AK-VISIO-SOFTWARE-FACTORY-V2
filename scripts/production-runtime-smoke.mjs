@@ -13,6 +13,11 @@ for (const check of checks) {
   const url = new URL(check.path, base).toString()
   const response = await fetch(url, { redirect: 'manual' })
   const body = await response.text()
+  for (const [name, expected] of Object.entries(check.headers || {})) {
+    if (response.headers.get(name) !== expected) {
+      failures.push(check.path + ': header ' + name + ' expected ' + expected + ', got ' + response.headers.get(name))
+    }
+  }
   const ok = response.status === check.status && check.includes.every((marker) => body.includes(marker))
   if (response.status !== check.status) failures.push(check.path + ': expected ' + check.status + ', got ' + response.status)
   for (const marker of check.includes) if (!body.includes(marker)) failures.push(check.path + ': missing marker ' + marker)
@@ -20,7 +25,7 @@ for (const check of checks) {
 }
 
 if (failures.length) {
-  console.error(failures.join('\\n'))
+  console.error(failures.join('\n'))
   process.exit(1)
 }
 
