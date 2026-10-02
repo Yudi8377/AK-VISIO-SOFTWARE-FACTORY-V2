@@ -8,7 +8,7 @@ export async function POST(request: Request) {
   const { data: { user }, error } = await supabase.auth.getUser()
   if (error || !user) return NextResponse.json({ error: 'authentication_required' }, { status: 401 })
   const body = await request.json().catch(() => null)
-  if (!body?.releaseCandidateId || !body?.buildId || !body?.approvalId || !body?.organizationId || !body?.environment) return NextResponse.json({ error: 'releaseCandidateId, buildId, approvalId, organizationId and environment are required' }, { status: 400 })
+  if (!body?.releaseCandidateId || !body?.buildId || !body?.approvalId || !body?.organizationId || !body?.environment || !body?.targetDeploymentId) return NextResponse.json({ error: 'releaseCandidateId, buildId, approvalId, organizationId, environment and targetDeploymentId are required' }, { status: 400 })
   const webhookUrl = process.env.DEPLOYMENT_WEBHOOK_URL
   const webhookSecret = process.env.DEPLOYMENT_WEBHOOK_SECRET
   if (!webhookUrl || !webhookSecret) return NextResponse.json({ error: 'deployment_provider_not_configured' }, { status: 503 })
@@ -17,7 +17,7 @@ export async function POST(request: Request) {
   if (!pkg || !approval) return NextResponse.json({ error: 'release_package_or_approval_not_found' }, { status: 404 })
   let reqData: ReturnType<typeof createDeploymentRequest>
   try {
-    reqData = createDeploymentRequest({ candidate: pkg.candidate, build: pkg.build, approval, environment: String(body.environment), action: 'rollback', provider: String(process.env.DEPLOYMENT_PROVIDER || 'webhook') })
+    reqData = createDeploymentRequest({ candidate: pkg.candidate, build: pkg.build, approval, environment: String(body.environment), action: 'rollback', provider: String(process.env.DEPLOYMENT_PROVIDER || 'webhook'), rollbackTargetDeploymentId: String(body.targetDeploymentId) })
   } catch (err) {
     return NextResponse.json({ error: err instanceof Error ? err.message : 'rollback_gate_failed' }, { status: 422 })
   }
