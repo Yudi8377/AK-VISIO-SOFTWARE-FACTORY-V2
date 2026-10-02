@@ -26,8 +26,7 @@ for (const check of checks) {
 }
 
 if (failures.length) {
-  console.error(failures.join('
-'))
+  console.error(failures.join('\\n'))
   process.exit(1)
 }
 
