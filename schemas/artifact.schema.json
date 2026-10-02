@@ -6,39 +6,40 @@
     "artifact_id",
     "type",
     "business_dna_version",
-    "status"
+    "status",
+    "risk",
+    "source_refs",
+    "approval_refs",
+    "license_refs",
+    "content_hash",
+    "execution_version"
   ],
   "properties": {
-    "artifact_id": {
-      "type": "string"
-    },
+    "artifact_id": { "type": "string" },
     "type": {
-      "type": "string"
-    },
-    "business_dna_version": {
-      "type": "string"
-    },
-    "status": {
       "enum": [
-        "draft",
-        "generated",
-        "review",
-        "approved",
-        "released",
-        "superseded"
+        "application-manifest",
+        "module-generation",
+        "data-model",
+        "api-contract",
+        "ui-contract",
+        "admin-contract",
+        "document-contract",
+        "test-contract"
       ]
     },
-    "source_refs": {
-      "type": "array"
+    "business_dna_version": { "type": "string" },
+    "status": {
+      "enum": ["draft", "generated", "review", "approved", "released", "superseded"]
     },
-    "approval_refs": {
-      "type": "array"
+    "risk": {
+      "enum": ["low", "medium", "high", "critical"]
     },
-    "license_refs": {
-      "type": "array"
-    },
-    "hash": {
-      "type": "string"
-    }
+    "source_refs": { "type": "array", "items": { "type": "string" } },
+    "approval_refs": { "type": "array", "items": { "type": "string" } },
+    "license_refs": { "type": "array", "items": { "type": "string" } },
+    "content_hash": { "type": "string", "minLength": 64, "maxLength": 64 },
+    "execution_version": { "type": "string" },
+    "content": { "type": "object" }
   }
 }
