@@ -39,6 +39,10 @@ export type DeploymentEvidence = {
   deploymentEngineVersion: string
   startedAt: string
   completedAt: string
+  verificationStatus: 'pending' | 'passed' | 'failed'
+  verificationReference: string
+  verifiedAt?: string
+  rollbackTargetDeploymentId?: string
 }
 
 function stable(value: unknown): string {
