@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createDeploymentRequest, signDeploymentRequest, type DeploymentEvidence } from '@/lib/enterprise/deployment'
 import { getOwnedReleaseApproval, getOwnedReleasePackage, persistDeploymentEvidence } from '@/lib/enterprise/release-deployment-repository'
-import { createServerSupabaseClient } from '@/lib/supabase-server'
+import { createServerSupabaseClient } from '@/lib/supabase-server'\nimport { persistDeploymentState } from '@/lib/enterprise/release-deployment-repository'\nimport { assertDeploymentTransition, computeDeploymentStateHash } from '@/lib/enterprise/deployment-state'
 
 export async function POST(request: Request) {
   const supabase = await createServerSupabaseClient()
@@ -40,7 +40,7 @@ export async function POST(request: Request) {
   const evidence: DeploymentEvidence = {
     deploymentId: reqData.deploymentId, approvalId: approval.approvalId, releaseCandidateId: pkg.candidate.releaseCandidateId, buildId: pkg.build.buildId,
     executionId: pkg.build.executionId, organizationId: approval.organizationId, ownerId: user.id, environment, action: 'deploy', status, provider, providerReference,
-    packageFingerprint: pkg.build.packageFingerprint, requestHash: reqData.requestHash, deploymentEngineVersion: '1.0.0', startedAt, completedAt: new Date().toISOString(),
+    packageFingerprint: pkg.build.packageFingerprint, requestHash: reqData.requestHash, deploymentEngineVersion: '1.0.0', startedAt, completedAt: new Date().toISOString(),\n    verificationStatus: 'pending', verificationReference: 'verification_not_run',
   }
   await persistDeploymentEvidence(evidence)
   return NextResponse.json({ evidence, releaseEligible: status === 'succeeded' }, { status: status === 'succeeded' ? 200 : 502 })
