@@ -1,2 +1,2 @@
 'use client'
-export default function Error({reset}:{error:Error&{digest?:string};reset:()=>void}){return <main><h1>Factory error</h1><p>The workspace hit an unexpected error.</p><button onClick={()=>reset()}>Retry</button><a href="/">Home</a></main>}
+export default function Error({reset}:{error:Error&{digest?:string};reset:()=>void}){return <main><h1>Terjadi kesalahan pada Factory</h1><p>Ruang kerja mengalami kesalahan yang tidak terduga.</p><button onClick={()=>reset()}>Coba lagi</button><a href="/">Beranda</a></main>}

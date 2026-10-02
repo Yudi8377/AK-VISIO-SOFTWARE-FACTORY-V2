@@ -1,1 +1,1 @@
-export default function Loading(){return <main><p>Loading factory workspace…</p></main>}
+export default function Loading(){return <main><p>Memuat ruang kerja Factory…</p></main>}

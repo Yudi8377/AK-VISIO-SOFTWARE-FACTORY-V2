@@ -18,7 +18,7 @@ function withTimeout<T>(promise: PromiseLike<T>, label: string, ms = REQUEST_TIM
 
 async function getAuthenticatedUser() {
   const supabase = createClient()
-  const { data, error } = await withTimeout(supabase.auth.getSession(), 'Authentication check')
+  const { data, error } = await withTimeout(supabase.auth.getSession(), 'Pemeriksaan autentikasi')
   if (error) throw error
   if (!data.session?.user) return null
   return data.session.user
@@ -41,12 +41,12 @@ export default function Requests() {
       }
       const { data, error } = await withTimeout(
         supabase.from('factory_requests').select('*').order('created_at', { ascending: false }).limit(50),
-        'Request loading'
+        'Pemuatan permintaan'
       )
       if (error) throw error
       setRows(data || [])
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'Unable to load requests')
+      setMessage(error instanceof Error ? error.message : 'Tidak dapat memuat permintaan')
     }
   }
 
@@ -54,12 +54,12 @@ export default function Requests() {
 
   async function save() {
     if (!project.trim() || !text.trim()) {
-      setMessage('Project name and request are required')
+      setMessage('Nama proyek and request are required')
       return
     }
 
     setBusy(true)
-    setMessage('Saving…')
+    setMessage('Menyimpan…')
 
     try {
       const supabase = createClient()
@@ -73,7 +73,7 @@ export default function Requests() {
       const slug = slugify(project)
       const { data: existingProject, error: projectLookupError } = await withTimeout(
         supabase.from('factory_projects').select('id').eq('owner_id', userId).eq('slug', slug).maybeSingle(),
-        'Project lookup'
+        'Pencarian proyek'
       )
       if (projectLookupError) throw projectLookupError
 
@@ -88,10 +88,10 @@ export default function Requests() {
             status: 'draft',
             metadata: { source: 'request-workspace' },
           }).select('id').single(),
-          'Project creation'
+          'Pembuatan proyek'
         )
         if (error) throw error
-        if (!newProject?.id) throw new Error('Project creation returned no project ID')
+        if (!newProject?.id) throw new Error('Pembuatan proyek returned no project ID')
         projectId = newProject.id
       }
 
@@ -104,19 +104,19 @@ export default function Requests() {
           status: 'draft',
           metadata: { source: 'web-ui' },
         }),
-        'Request save'
+        'Penyimpanan permintaan'
       )
       if (requestError) throw requestError
 
       setText('')
-      setMessage('Request saved')
+      setMessage('Permintaan tersimpan')
       await load()
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'Unable to save request')
+      setMessage(error instanceof Error ? error.message : 'Tidak dapat menyimpan permintaan')
     } finally {
       setBusy(false)
     }
   }
 
-  return <main className="shell"><header className="topbar"><div><strong>REQUESTS</strong><span> FACTORY WORKSPACE</span></div><Link href="/">Home</Link></header><section className="hero" style={{ gridTemplateColumns: '1fr' }}><div><p className="eyebrow">REQUEST INTAKE</p><h1 style={{ fontSize: 'clamp(40px,6vw,64px)' }}>Turn intent into a run.</h1><p className="lede">Create a project and persist an owned factory request. Authentication and RLS remain the authority for ownership.</p><input value={project} onChange={e => setProject(e.target.value)} placeholder="Project name" style={{ width: '100%', marginBottom: 12, padding: 16, borderRadius: 12, border: '1px solid #33405f', background: '#0c1220', color: '#eef3ff', fontSize: 16 }} /><textarea value={text} onChange={e => setText(e.target.value)} placeholder="Describe the software you want the factory to build…" style={{ width: '100%', minHeight: 160, padding: 18, borderRadius: 12, border: '1px solid #33405f', background: '#0c1220', color: '#eef3ff', fontSize: 16 }} /><div className="actions"><button onClick={() => void save()} disabled={busy} className="primary" style={{ border: 0 }}>{busy ? 'Saving…' : 'Save request'}</button>{message && <span role="status" aria-live="polite" style={{ marginLeft: 12, color: '#9eabc5' }}>{message}</span>}</div></div></section><section className="grid">{rows.map(r => <article className="card" key={r.id}><div className="cardtop"><h2>{r.title}</h2><span>{r.status}</span></div><p>{r.prompt}</p><small>{new Date(r.created_at).toLocaleString()}</small></article>)}</section></main>
+  return <main className="shell"><header className="topbar"><div><strong>PERMINTAAN</strong><span> RUANG KERJA FACTORY</span></div><Link href="/">Beranda</Link></header><section className="hero" style={{ gridTemplateColumns: '1fr' }}><div><p className="eyebrow">PENERIMAAN PERMINTAAN</p><h1 style={{ fontSize: 'clamp(40px,6vw,64px)' }}>Ubah kebutuhan menjadi eksekusi.</h1><p className="lede">Buat proyek dan simpan permintaan Factory milik Anda. Autentikasi dan RLS tetap menjadi otoritas kepemilikan.</p><input value={project} onChange={e => setProject(e.target.value)} placeholder="Nama proyek" style={{ width: '100%', marginBottom: 12, padding: 16, borderRadius: 12, border: '1px solid #33405f', background: '#0c1220', color: '#eef3ff', fontSize: 16 }} /><textarea value={text} onChange={e => setText(e.target.value)} placeholder="Jelaskan perangkat lunak yang ingin dibangun Factory…" style={{ width: '100%', minHeight: 160, padding: 18, borderRadius: 12, border: '1px solid #33405f', background: '#0c1220', color: '#eef3ff', fontSize: 16 }} /><div className="actions"><button onClick={() => void save()} disabled={busy} className="primary" style={{ border: 0 }}>{busy ? 'Menyimpan…' : 'Simpan permintaan'}</button>{message && <span role="status" aria-live="polite" style={{ marginLeft: 12, color: '#9eabc5' }}>{message}</span>}</div></div></section><section className="grid">{rows.map(r => <article className="card" key={r.id}><div className="cardtop"><h2>{r.title}</h2><span>{r.status}</span></div><p>{r.prompt}</p><small>{new Date(r.created_at).toLocaleString()}</small></article>)}</section></main>
 }

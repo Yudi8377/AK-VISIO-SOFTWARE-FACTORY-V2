@@ -1,5 +1,2 @@
 import FactoryTable from '@/components/factory-table'
-
-export default function Projects() {
-  return <FactoryTable title="Projects" eyebrow="PROJECT INVENTORY" description="Inspect generated factory projects owned by the authenticated operator." table="factory_projects" columns={["name", "slug", "status", "created_at", "updated_at"]} />
-}
+export default function Projects(){return <FactoryTable title="Proyek" eyebrow="INVENTARIS PROYEK" description="Lihat proyek Factory yang dibuat dan dimiliki oleh operator terautentikasi." table="factory_projects" columns={["name","slug","status","created_at","updated_at"]}/>} 
