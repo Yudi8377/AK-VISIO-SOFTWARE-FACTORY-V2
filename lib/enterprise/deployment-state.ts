@@ -49,7 +49,7 @@ export function assertVerifiedDeployment(input: {
   verificationStatus: 'pending' | 'passed' | 'failed'
   providerReference: string
 }): void {
-  if (input.state !== 'verified' || input.verificationStatus !== 'passed') {
+  if ((input.state !== 'verified' && input.state !== 'promoted') || input.verificationStatus !== 'passed') {
     throw new Error('deployment_verification_required')
   }
   if (!input.providerReference || input.providerReference === 'unavailable') {
