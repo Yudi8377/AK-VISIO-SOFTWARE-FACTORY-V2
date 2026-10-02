@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto'
-import type { ReleaseCandidate } from './release.ts'
+import { assertReleaseCandidateIntegrity, type ReleaseCandidate } from './release.ts'
 
 export const BUILD_ENGINE_VERSION = '1.0.0'
 export type BuildEvidenceStatus = 'passed' | 'failed'
@@ -43,6 +43,7 @@ function validSha(value: string): boolean {
 
 export function executeBuild(input: BuildInput): BuildEvidence {
   const { candidate } = input
+  assertReleaseCandidateIntegrity(candidate)
   if (candidate.status !== 'eligible') throw new Error('build_candidate_blocked')
   if (candidate.buildStatus === 'passed') throw new Error('build_already_completed')
   if (candidate.qualityEvidenceHash !== input.qualityEvidenceHash) throw new Error('build_quality_evidence_mismatch')
