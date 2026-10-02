@@ -43,6 +43,9 @@ jobs:
           test -f Dockerfile
           test -f .dockerignore
 
+      - name: Run production runtime contract suite
+        run: npm run test:production-runtime
+
       - name: Smoke test production health endpoint
         run: |
           set -euo pipefail
