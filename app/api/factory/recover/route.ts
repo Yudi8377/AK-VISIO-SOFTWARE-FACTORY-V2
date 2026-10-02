@@ -119,17 +119,6 @@ export async function POST(request: Request) {
       health,
     }, { status: 200 })
   }
-  await persistRecoveryEvidence({
-    recoveryId: execution.recoveryId,
-    ownerId,
-    organizationId,
-    environment,
-    currentDeploymentId,
-    targetDeploymentId,
-    decision: 'eligible',
-    evidenceHash: execution.requestHash,
-  })
-
   const approval = await getTrustedReleaseApproval(ownerId, target.approvalId)
   const pkg = await getTrustedReleasePackage(ownerId, target.releaseCandidateId, target.buildId)
   if (!approval || !pkg) { await markRecoveryFailure(ownerId, incidentKey, leaseToken, 'target_release_lineage_not_found'); return NextResponse.json({ error: 'target_release_lineage_not_found' }, { status: 404 }) }
@@ -203,7 +192,19 @@ export async function POST(request: Request) {
     verificationStatus: 'pending',
     verificationReference: 'verification_not_run',
     rollbackTargetDeploymentId: target.deploymentId,
+    recoveryIncidentKey: incidentKey,
   }
+  await persistRecoveryEvidence({
+    recoveryId: execution.recoveryId,
+    ownerId,
+    organizationId,
+    environment,
+    currentDeploymentId,
+    targetDeploymentId,
+    decision: 'eligible',
+    evidenceHash: execution.requestHash,
+  })
+
   await persistDeploymentEvidence(evidence)
   await markRecoveryStarted(ownerId, incidentKey, leaseToken, execution.recoveryId)
 

@@ -30,3 +30,5 @@ grant all on table public.factory_recovery_incidents to service_role;
 create policy factory_recovery_incidents_owner_select on public.factory_recovery_incidents for select to authenticated using ((select auth.uid()) = owner_id);
 create index if not exists factory_recovery_incidents_scope_idx on public.factory_recovery_incidents(owner_id, organization_id, environment, updated_at desc);
 create index if not exists factory_recovery_incidents_status_idx on public.factory_recovery_incidents(status, cooldown_until, lease_until);
+alter table public.factory_deployment_evidence add column if not exists recovery_incident_key text;
+create index if not exists factory_deployment_evidence_recovery_incident_idx on public.factory_deployment_evidence(owner_id, recovery_incident_key) where recovery_incident_key is not null;

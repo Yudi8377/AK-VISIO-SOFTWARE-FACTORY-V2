@@ -46,7 +46,7 @@ export async function persistDeploymentEvidence(evidence: DeploymentEvidence) {
     execution_id: evidence.executionId, organization_id: evidence.organizationId, owner_id: evidence.ownerId, environment: evidence.environment,
     action: evidence.action, status: evidence.status, provider: evidence.provider, provider_reference: evidence.providerReference,
     package_fingerprint: evidence.packageFingerprint, request_hash: evidence.requestHash, deployment_engine_version: evidence.deploymentEngineVersion,
-    started_at: evidence.startedAt, completed_at: evidence.completedAt,
+    started_at: evidence.startedAt, completed_at: evidence.completedAt, recovery_incident_key: evidence.recoveryIncidentKey ?? null,
   }, { onConflict: 'owner_id,deployment_id' })
   if (error) throw error
 }
@@ -69,6 +69,7 @@ function deploymentFromRow(row: Record<string, unknown>): DeploymentEvidence {
     verificationReference: String(row.verification_reference),
     verifiedAt: row.verified_at ? String(row.verified_at) : undefined,
     rollbackTargetDeploymentId: row.rollback_target_deployment_id ? String(row.rollback_target_deployment_id) : undefined,
+    recoveryIncidentKey: row.recovery_incident_key ? String(row.recovery_incident_key) : undefined,
   }
 }
 
