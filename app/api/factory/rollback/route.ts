@@ -22,7 +22,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: err instanceof Error ? err.message : 'rollback_gate_failed' }, { status: 422 })
   }
   const payload = JSON.stringify(reqData.body)
-  await persistDeploymentState({ deploymentId: reqData.deploymentId, ownerId: user.id, organizationId: approval.organizationId, environment, state: 'requested', transitionAction: 'request', evidenceHash: reqData.requestHash, stateHash: computeDeploymentStateHash({ deploymentId: reqData.deploymentId, state: 'requested', action: 'request', evidenceHash: reqData.requestHash, changedAt: new Date().toISOString() }) })
+  await persistDeploymentState({ deploymentId: reqData.deploymentId, ownerId: user.id, organizationId: approval.organizationId, environment: String(body.environment), state: 'requested', transitionAction: 'request', evidenceHash: reqData.requestHash, stateHash: computeDeploymentStateHash({ deploymentId: reqData.deploymentId, state: 'requested', action: 'request', evidenceHash: reqData.requestHash, changedAt: new Date().toISOString() }) })
   const startedAt = new Date().toISOString()
   const signature = signDeploymentRequest(payload, webhookSecret)
   let status: DeploymentEvidence['status'] = 'failed'
