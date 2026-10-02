@@ -1,6 +1,4 @@
 import { createHash } from 'node:crypto'
-import { createServerSupabaseAdminClient } from '@/lib/supabase-server'
-
 export type AuditActorType = 'system' | 'user' | 'scheduler' | 'provider'
 
 export type AuditEventInput = {
@@ -66,6 +64,7 @@ export function createAuditEvent(input: AuditEventInput, previousEventHash: stri
 }
 
 export async function appendAuditEvent(input: AuditEventInput) {
+  const { createServerSupabaseAdminClient } = await import('@/lib/supabase-server')
   const supabase = createServerSupabaseAdminClient()
   const { data: previous } = await supabase
     .from('factory_audit_events')
