@@ -1,2 +1,2 @@
 import FactoryTable from '@/components/factory-table'
-export default function Repairs(){return <FactoryTable title="Perbaikan" eyebrow="RIWAYAT SELF-HEALING" description="Tinjau tindakan self-healing yang dibatasi dan hasil statusnya untuk proses terautentikasi Anda." table="factory_repairs" columns={["urutan_perbaikan","masalah","tindakan","status","dibuat_pada"]}/>} 
+export default function Repairs(){return <FactoryTable title="Perbaikan" eyebrow="RIWAYAT SELF-HEALING" description="Tinjau tindakan self-healing yang dibatasi dan hasil statusnya untuk proses terautentikasi Anda." table="factory_repairs" columns={["repair_order","issue","action","status","created_at"]}/>} 
