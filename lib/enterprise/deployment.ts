@@ -69,9 +69,9 @@ export function assertDeploymentEligible(candidate: ReleaseCandidate, build: Bui
   if (build.candidateHash !== candidate.candidateHash || build.qualityEvidenceHash !== candidate.qualityEvidenceHash) throw new Error('build_lineage_integrity_failed')
   if (approval.environment !== environment) throw new Error('deployment_environment_mismatch')
 }
-export function createDeploymentRequest(input: { candidate: ReleaseCandidate; build: BuildEvidence; approval: ReleaseApproval; environment: string; action: DeploymentAction; provider: string }): { deploymentId: string; requestHash: string; body: Record<string, unknown> } {
+export function createDeploymentRequest(input: { candidate: ReleaseCandidate; build: BuildEvidence; approval: ReleaseApproval; environment: string; action: DeploymentAction; provider: string; rollbackTargetDeploymentId?: string }): { deploymentId: string; requestHash: string; body: Record<string, unknown> } {
   assertDeploymentEligible(input.candidate, input.build, input.approval, input.environment)
-  const body = { action: input.action, environment: input.environment, provider: input.provider, releaseCandidateId: input.candidate.releaseCandidateId, buildId: input.build.buildId, executionId: input.build.executionId, packageFingerprint: input.build.packageFingerprint, candidateHash: input.candidate.candidateHash, qualityEvidenceHash: input.build.qualityEvidenceHash, sourceRevision: input.build.sourceRevision, deploymentEngineVersion: DEPLOYMENT_ENGINE_VERSION }
+  const body = { action: input.action, environment: input.environment, provider: input.provider, releaseCandidateId: input.candidate.releaseCandidateId, buildId: input.build.buildId, executionId: input.build.executionId, packageFingerprint: input.build.packageFingerprint, candidateHash: input.candidate.candidateHash, qualityEvidenceHash: input.build.qualityEvidenceHash, sourceRevision: input.build.sourceRevision, deploymentEngineVersion: DEPLOYMENT_ENGINE_VERSION, ...(input.action === 'rollback' ? { rollbackTargetDeploymentId: input.rollbackTargetDeploymentId || null } : {}) }
   const requestHash = hash(body)
   return { deploymentId: 'deploy-' + requestHash.slice(0, 24), requestHash, body }
 }
