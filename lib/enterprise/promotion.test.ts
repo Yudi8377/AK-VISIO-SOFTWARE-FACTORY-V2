@@ -12,5 +12,5 @@ const evidence: DeploymentEvidence = {
 const result = createPromotionDecision(evidence, 'staging', 'staging')
 assert.equal(result.decision, 'promote')
 assert.throws(() => createPromotionDecision({ ...evidence, status: 'failed' }, 'staging', 'staging'), /promotion_requires_successful_deployment/)
-assert.throws(() => createPromotionDecision({ ...evidence, environment: 'development' }, 'staging', 'staging'), /promotion_environment_mismatch/)
+assert.throws(() => createPromotionDecision({ ...evidence, environment: 'development' }, 'staging', 'staging'), /promotion_environment_mismatch/)\nassert.throws(() => createPromotionDecision({ ...evidence, environment: 'production' }, 'production', 'production'), /promotion_production_approval_required/)\nassert.doesNotThrow(() => createPromotionDecision({ ...evidence, environment: 'production' }, 'production', 'production', 'verified', { packageFingerprint: 'fingerprint-1', environment: 'production', status: 'approved' }))
 console.log('promotion tests passed')
