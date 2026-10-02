@@ -5,11 +5,10 @@ import { executeConfiguredProvider } from '@/lib/enterprise/provider'
 import { createRecoveryDecision } from '@/lib/enterprise/monitoring'
 import { createRecoveryExecution, assertTrustedRecoveryInvocation } from '@/lib/enterprise/recovery'
 import {
-  getOwnedDeploymentEvidence,
-  getLatestOwnedDeploymentState,
-  getOwnedReleaseApproval,
-  getOwnedReleasePackage,
-  getOwnedRecoveryEvidence,
+  getTrustedRecoveryContext,
+  getTrustedReleaseApproval,
+  getTrustedReleasePackage,
+  getTrustedRecoveryEvidence,
   persistDeploymentEvidence,
   persistDeploymentState,
 } from '@/lib/enterprise/release-deployment-repository'
@@ -62,10 +61,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'invalid_maxAgeSeconds' }, { status: 400 })
   }
 
-  const current = await getOwnedDeploymentEvidence(ownerId, currentDeploymentId)
-  const target = await getOwnedDeploymentEvidence(ownerId, targetDeploymentId)
-  const currentState = await getLatestOwnedDeploymentState(ownerId, currentDeploymentId)
-  const targetState = await getLatestOwnedDeploymentState(ownerId, targetDeploymentId)
+  const context = await getTrustedRecoveryContext(ownerId, currentDeploymentId, targetDeploymentId)
+  const current = context.current
+  const target = context.target
+  const currentState = context.currentState
+  const targetState = context.targetState
   if (!current || !target || !currentState || !targetState) {
     return NextResponse.json({ error: 'recovery_deployment_not_found' }, { status: 404 })
   }
@@ -102,7 +102,7 @@ export async function POST(request: Request) {
     decisionId: decision.decisionId,
     evidenceHash: decision.evidenceHash,
   })
-  const existingRecovery = await getOwnedRecoveryEvidence(ownerId, execution.recoveryId)
+  const existingRecovery = await getTrustedRecoveryEvidence(ownerId, execution.recoveryId)
   if (existingRecovery) {
     return NextResponse.json({
       recoveryId: execution.recoveryId,
@@ -122,8 +122,8 @@ export async function POST(request: Request) {
     evidenceHash: execution.requestHash,
   })
 
-  const approval = await getOwnedReleaseApproval(ownerId, target.approvalId)
-  const pkg = await getOwnedReleasePackage(ownerId, target.releaseCandidateId, target.buildId)
+  const approval = await getTrustedReleaseApproval(ownerId, target.approvalId)
+  const pkg = await getTrustedReleasePackage(ownerId, target.releaseCandidateId, target.buildId)
   if (!approval || !pkg) return NextResponse.json({ error: 'target_release_lineage_not_found' }, { status: 404 })
   if (approval.organizationId !== organizationId || approval.environment !== environment || approval.packageFingerprint !== target.packageFingerprint) {
     return NextResponse.json({ error: 'target_release_lineage_mismatch' }, { status: 422 })
