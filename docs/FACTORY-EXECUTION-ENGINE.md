@@ -27,7 +27,7 @@ Each generated artifact receives a SHA-256 content hash. Artifact IDs are determ
 
 ## Governance
 
-High-risk and critical generation requests remain blocked unless explicit approval is supplied. Artifact lifecycle is monotonic:
+High-risk and critical generation requests remain blocked unless approval is supplied by a trusted control-plane path; the public execution endpoint never trusts a client-provided approval flag. Artifact lifecycle is monotonic:
 
 draft → generated → review → approved → released
 
