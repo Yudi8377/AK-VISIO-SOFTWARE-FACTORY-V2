@@ -1,4 +1,4 @@
-import { createHash } from 'node:crypto'
+import { createHash, timingSafeEqual } from 'node:crypto'
 
 export const RECOVERY_ENGINE_VERSION = '1.0.0'
 export type RecoveryDecision = 'eligible' | 'blocked'
@@ -18,7 +18,7 @@ export function assertTrustedRecoveryInvocation(secret: string | undefined, pres
   if (!secret || !presented || presented.length !== secret.length) throw new Error('trusted_recovery_secret_required')
   const expected = Buffer.from(secret)
   const actual = Buffer.from(presented)
-  if (expected.length !== actual.length || !createHash('sha256').update(actual).digest('hex').includes(createHash('sha256').update(expected).digest('hex').slice(0, 16))) {
+  if (expected.length !== actual.length || !timingSafeEqual(expected, actual)) {
     throw new Error('trusted_recovery_secret_invalid')
   }
 }
