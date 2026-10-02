@@ -58,7 +58,7 @@ export default function UpdatePassword() {
         setReady(true)
         return
       }
-      setError('This recovery link is invalid or expired. Request a new password reset link.')
+      setError('Tautan pemulihan ini tidak valid atau sudah kedaluwarsa. Minta tautan pengaturan ulang yang baru.')
     }
 
     const { data: listener } = supabase.auth.onAuthStateChange((event) => {
@@ -80,8 +80,8 @@ export default function UpdatePassword() {
     e.preventDefault()
     setError('')
     setMessage('')
-    if (password.length < 8) return setError('Password must be at least 8 characters.')
-    if (password !== confirm) return setError('Passwords do not match.')
+    if (password.length < 8) return setError('Kata sandi minimal 8 karakter.')
+    if (password !== confirm) return setError('Kata sandi tidak cocok.')
 
     setBusy(true)
     const supabase = createClient()
@@ -89,9 +89,9 @@ export default function UpdatePassword() {
     setBusy(false)
 
     if (error) return setError(error.message)
-    setMessage('Password updated successfully. Redirecting to sign in…')
+    setMessage('Kata sandi berhasil diperbarui. Mengarahkan ke halaman masuk…')
     window.setTimeout(() => router.replace('/login'), 1200)
   }
 
-  return <main className="shell"><header className="topbar"><strong>AK VISIO <span>SOFTWARE FACTORY V2</span></strong><Link href="/login">Sign in</Link></header><section style={{maxWidth:520,margin:'80px auto'}}><p className="eyebrow">SECURE RECOVERY</p><h1 style={{fontSize:52}}>Choose a new password.</h1><p className="lede">Use this page only after opening the password recovery link from your email.</p>{ready?<form onSubmit={submit} style={{display:'grid',gap:12}}><input required minLength={8} type="password" value={password} onChange={e=>setPassword(e.target.value)} placeholder="New password" autoComplete="new-password" style={{padding:15,borderRadius:10,border:'1px solid #33405f',background:'#0c1220',color:'#eef3ff'}}/><input required minLength={8} type="password" value={confirm} onChange={e=>setConfirm(e.target.value)} placeholder="Confirm new password" autoComplete="new-password" style={{padding:15,borderRadius:10,border:'1px solid #33405f',background:'#0c1220',color:'#eef3ff'}}/><button disabled={busy} className="primary" style={{padding:14,border:0,borderRadius:10}}>{busy?'Updating…':'Update password'}</button></form>:<p>{error || 'Waiting for a valid password recovery session. Open the latest recovery email link again.'}</p>}{message&&<p role="status">{message}</p>}{error&&ready&&<p role="alert">{error}</p>}</section></main>
+  return <main className="shell"><header className="topbar"><strong>AK VISIO <span>SOFTWARE FACTORY V2</span></strong><Link href="/login">Masuk</Link></header><section style={{maxWidth:520,margin:'80px auto'}}><p className="eyebrow">PEMULIHAN AMAN</p><h1 style={{fontSize:52}}>Pilih kata sandi baru.</h1><p className="lede">Gunakan halaman ini setelah membuka tautan pemulihan kata sandi dari email.</p>{ready?<form onSubmit={submit} style={{display:'grid',gap:12}}><input required minLength={8} type="password" value={password} onChange={e=>setPassword(e.target.value)} placeholder="Kata sandi baru" autoComplete="new-password" style={{padding:15,borderRadius:10,border:'1px solid #33405f',background:'#0c1220',color:'#eef3ff'}}/><input required minLength={8} type="password" value={confirm} onChange={e=>setConfirm(e.target.value)} placeholder="Konfirmasi kata sandi baru" autoComplete="new-password" style={{padding:15,borderRadius:10,border:'1px solid #33405f',background:'#0c1220',color:'#eef3ff'}}/><button disabled={busy} className="primary" style={{padding:14,border:0,borderRadius:10}}>{busy?'Memperbarui…':'Perbarui kata sandi'}</button></form>:<p>{error || 'Menunggu sesi pemulihan kata sandi yang valid. Buka kembali tautan terbaru dari email pemulihan.'}</p>}{message&&<p role="status">{message}</p>}{error&&ready&&<p role="alert">{error}</p>}</section></main>
 }
