@@ -21,6 +21,6 @@ assert.doesNotThrow(() => assertReleaseEligible(built))
 
 const blocked = createReleaseCandidate(result.executionId, result.artifacts, { ...evidence, status: 'failed', releaseCandidateEligible: false })
 assert.equal(blocked.status, 'blocked')
-assert.throws(() => assertReleaseEligible(blocked), /release_candidate_blocked/)
+assert.throws(() => assertReleaseEligible(blocked), /release_gate_failed/)
 
 console.log('Release candidate/build plane contract: PASS')
