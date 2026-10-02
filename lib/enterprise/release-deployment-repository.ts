@@ -131,6 +131,13 @@ export async function persistPromotionEvidence(input: {
   if (error) throw error
 }
 
+export async function getOwnedRecoveryEvidence(ownerId: string, recoveryId: string) {
+  const supabase = await createServerSupabaseClient()
+  const { data, error } = await supabase.from('factory_recovery_evidence').select('*').eq('owner_id', ownerId).eq('recovery_id', recoveryId).maybeSingle()
+  if (error) throw error
+  return data
+}
+
 export async function listOwnedReleaseApprovals(ownerId: string) {
   const supabase = await createServerSupabaseClient()
   const { data, error } = await supabase.from('factory_release_approvals').select('*').eq('owner_id', ownerId).order('approved_at', { ascending: false }).limit(200)
