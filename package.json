@@ -22,10 +22,11 @@
     "test:release-gate": "node --experimental-strip-types lib/enterprise/release-gate.test.ts",
     "test:monitoring": "node --experimental-strip-types lib/enterprise/monitoring.test.ts",
     "test:self-healing": "node --experimental-strip-types lib/enterprise/self-healing.test.ts",
-    "test:all": "npm run test:contracts && npm run test:enterprise && npm run test:enterprise-runtime && npm run test:factory-execution && npm run test:factory-qa && npm run test:release && npm run test:build && npm run test:deployment && npm run test:promotion && npm run test:deployment-state && npm run test:release-gate && npm run test:monitoring && npm run test:self-healing && npm run test:recovery-observability",
+    "test:all": "npm run test:contracts && npm run test:enterprise && npm run test:enterprise-runtime && npm run test:factory-execution && npm run test:factory-qa && npm run test:release && npm run test:build && npm run test:deployment && npm run test:promotion && npm run test:deployment-state && npm run test:release-gate && npm run test:monitoring && npm run test:self-healing && npm run test:recovery-observability && npm run test:audit-ledger",
     "test:recovery-observability": "node --experimental-strip-types lib/enterprise/recovery-observability.test.ts",
     "test:production-runtime": "node scripts/production-runtime-smoke.mjs",
-    "test:security-headers": "node scripts/security-headers-smoke.mjs"
+    "test:security-headers": "node scripts/security-headers-smoke.mjs",
+    "test:audit-ledger": "node --experimental-strip-types lib/enterprise/audit-ledger.test.ts"
   },
   "dependencies": {
     "@supabase/ssr": "0.12.7",
