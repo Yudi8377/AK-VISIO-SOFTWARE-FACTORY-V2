@@ -1,5 +1,2 @@
 import FactoryTable from '@/components/factory-table'
-
-export default function Runs() {
-  return <FactoryTable title="Eksekusi Factory" eyebrow="PIPELINE EKSEKUSI" description="Pantau eksekusi terautentikasi melalui Perencana, Generator, Pengujian, Self-Healing, Uji Ulang, Validator, dan Go-Live." table="factory_runs" columns={["id_eksekusi", "status", "tahap_saat_ini", "dimulai_pada", "selesai_pada"]} />
-}
+export default function Runs(){return <FactoryTable title="Eksekusi Factory" eyebrow="PIPELINE EKSEKUSI" description="Pantau eksekusi terautentikasi melalui Perencana, Generator, Pengujian, Self-Healing, Uji Ulang, Validator, dan Go-Live." table="factory_runs" columns={["id_eksekusi","status","tahap_saat_ini","dimulai_pada","selesai_pada"]}/>} 
