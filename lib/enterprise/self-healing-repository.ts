@@ -39,7 +39,9 @@ export async function acquireRecoveryIncident(input:{ownerId:string;organization
 export async function markRecoveryFailure(ownerId:string,incidentKey:string,leaseToken:string,errorMessage:string) {
   const supabase=createServerSupabaseAdminClient()
   const now=new Date()
-  const {data}=await supabase.from('factory_recovery_incidents').select('attempt_count,max_attempts').eq('owner_id',ownerId).eq('incident_key',incidentKey).eq('lease_token',leaseToken).maybeSingle()
+  let lookup=supabase.from('factory_recovery_incidents').select('attempt_count,max_attempts').eq('owner_id',ownerId).eq('incident_key',incidentKey)
+  if (leaseToken) lookup=lookup.eq('lease_token',leaseToken)
+  const {data}=await lookup.maybeSingle()
   if(!data) return
   const attempts=Number(data.attempt_count), max=Number(data.max_attempts)
   const escalated=attempts>=max
