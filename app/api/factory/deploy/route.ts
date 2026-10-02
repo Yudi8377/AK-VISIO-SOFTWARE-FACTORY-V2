@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
-import { createDeploymentRequest, signDeploymentRequest, type DeploymentEvidence } from '@/lib/enterprise/deployment'
+import { createDeploymentRequest, type DeploymentEvidence } from '@/lib/enterprise/deployment'
 import { getOwnedReleaseApproval, getOwnedReleasePackage, persistDeploymentEvidence } from '@/lib/enterprise/release-deployment-repository'
-import { createServerSupabaseClient } from '@/lib/supabase-server'\nimport { persistDeploymentState } from '@/lib/enterprise/release-deployment-repository'\nimport { assertDeploymentTransition, computeDeploymentStateHash } from '@/lib/enterprise/deployment-state'
+import { createServerSupabaseClient } from '@/lib/supabase-server'\nimport { persistDeploymentState } from '@/lib/enterprise/release-deployment-repository'\nimport { assertDeploymentTransition, computeDeploymentStateHash } from '@/lib/enterprise/deployment-state'\nimport { executeConfiguredProvider } from '@/lib/enterprise/provider'
 
 export async function POST(request: Request) {
   const supabase = await createServerSupabaseClient()
