@@ -14,6 +14,8 @@ import {
 } from '@/lib/enterprise/release-deployment-repository'
 import { assessDeploymentHealth } from '@/lib/enterprise/monitoring'
 import { computeDeploymentStateHash } from '@/lib/enterprise/deployment-state'
+import { acquireRecoveryIncident, markRecoveryFailure, markRecoveryStarted } from '@/lib/enterprise/self-healing-repository'
+import { createRecoveryIncidentKey } from '@/lib/enterprise/self-healing'
 
 async function persistRecoveryEvidence(input: {
   recoveryId: string
@@ -93,6 +95,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: message, health }, { status: 422 })
   }
 
+  const incident = await acquireRecoveryIncident({ ownerId, organizationId, environment, currentDeploymentId, targetDeploymentId, healthEvidenceHash: decision.evidenceHash })
+  if (!incident.acquired) return NextResponse.json({ recovery: 'suppressed', reason: incident.reason, status: 'status' in incident ? incident.status : undefined, incident: 'incident' in incident ? incident.incident : undefined, health }, { status: 200 })
+
+  const incidentKey = createRecoveryIncidentKey({ ownerId, organizationId, environment, currentDeploymentId, targetDeploymentId })
+  const leaseToken = String(incident.incident.lease_token)
   const execution = createRecoveryExecution({
     currentDeploymentId,
     targetDeploymentId,
@@ -101,6 +108,7 @@ export async function POST(request: Request) {
     provider: target.provider,
     decisionId: decision.decisionId,
     evidenceHash: decision.evidenceHash,
+    attempt: incident.attempt,
   })
   const existingRecovery = await getTrustedRecoveryEvidence(ownerId, execution.recoveryId)
   if (existingRecovery) {
@@ -124,14 +132,15 @@ export async function POST(request: Request) {
 
   const approval = await getTrustedReleaseApproval(ownerId, target.approvalId)
   const pkg = await getTrustedReleasePackage(ownerId, target.releaseCandidateId, target.buildId)
-  if (!approval || !pkg) return NextResponse.json({ error: 'target_release_lineage_not_found' }, { status: 404 })
+  if (!approval || !pkg) { await markRecoveryFailure(ownerId, incidentKey, leaseToken, 'target_release_lineage_not_found'); return NextResponse.json({ error: 'target_release_lineage_not_found' }, { status: 404 }) }
   if (approval.organizationId !== organizationId || approval.environment !== environment || approval.packageFingerprint !== target.packageFingerprint) {
+    await markRecoveryFailure(ownerId, incidentKey, leaseToken, 'target_release_lineage_mismatch')
     return NextResponse.json({ error: 'target_release_lineage_mismatch' }, { status: 422 })
   }
 
   const webhookUrl = process.env.DEPLOYMENT_WEBHOOK_URL
   const webhookSecret = process.env.DEPLOYMENT_WEBHOOK_SECRET
-  if (!webhookUrl || !webhookSecret) return NextResponse.json({ error: 'deployment_provider_not_configured' }, { status: 503 })
+  if (!webhookUrl || !webhookSecret) { await markRecoveryFailure(ownerId, incidentKey, leaseToken, 'deployment_provider_not_configured'); return NextResponse.json({ error: 'deployment_provider_not_configured' }, { status: 503 }) }
 
   let reqData: ReturnType<typeof createDeploymentRequest>
   try {
@@ -145,6 +154,7 @@ export async function POST(request: Request) {
       rollbackTargetDeploymentId: target.deploymentId,
     })
   } catch (error) {
+    await markRecoveryFailure(ownerId, incidentKey, leaseToken, error instanceof Error ? error.message : 'rollback_gate_failed')
     return NextResponse.json({ error: error instanceof Error ? error.message : 'rollback_gate_failed' }, { status: 422 })
   }
 
@@ -195,6 +205,7 @@ export async function POST(request: Request) {
     rollbackTargetDeploymentId: target.deploymentId,
   }
   await persistDeploymentEvidence(evidence)
+  await markRecoveryStarted(ownerId, incidentKey, leaseToken, execution.recoveryId)
 
   const state = status === 'succeeded' ? 'provider_accepted' as const : 'failed' as const
   const action = status === 'succeeded' ? 'provider_accept' as const : 'fail' as const
@@ -209,6 +220,8 @@ export async function POST(request: Request) {
     evidenceHash: evidence.requestHash,
     stateHash: computeDeploymentStateHash({ deploymentId: evidence.deploymentId, state, action, evidenceHash: evidence.requestHash, changedAt: completedAt }),
   })
+
+  if (status !== 'succeeded') await markRecoveryFailure(ownerId, incidentKey, leaseToken, providerReference)
 
   return NextResponse.json({
     recoveryId: execution.recoveryId,
