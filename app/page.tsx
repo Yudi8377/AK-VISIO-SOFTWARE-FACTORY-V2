@@ -22,7 +22,7 @@ export default function Home() {
       <div className="brand-mark"><span>AK</span><div><strong>AK VISIO</strong><small>SOFTWARE FACTORY V2</small></div></div>
       <nav>
         <p>COMMAND</p><Link className="nav-active" href="/">Overview</Link><Link href="/requests">Requests</Link><Link href="/runs">Runs</Link>
-        <p>DELIVERY</p><Link href="/projects">Projects</Link><Link href="/digital-presence">Digital presence</Link><Link href="/repairs">Repairs</Link><Link href="/validation">Validation</Link>
+        <p>DELIVERY</p><Link href="/projects">Projects</Link><Link href="/recovery">Recovery</Link><Link href="/digital-presence">Digital presence</Link><Link href="/repairs">Repairs</Link><Link href="/validation">Validation</Link>
         <p>GOVERNANCE</p><Link href="/audit">Audit trail</Link>
       </nav>
       <div className="sidebar-footer"><i /> Factory online<div>V2 · Isolated environment</div></div>
