@@ -26,7 +26,8 @@
     "test:recovery-observability": "node --experimental-strip-types lib/enterprise/recovery-observability.test.ts",
     "test:production-runtime": "node scripts/production-runtime-smoke.mjs",
     "test:security-headers": "node scripts/security-headers-smoke.mjs",
-    "test:audit-ledger": "node --experimental-strip-types lib/enterprise/audit-ledger.test.ts"
+    "test:audit-ledger": "node --experimental-strip-types lib/enterprise/audit-ledger.test.ts",
+    "test:audit-runtime": "node scripts/audit-ledger-smoke.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "0.12.7",
