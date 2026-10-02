@@ -43,11 +43,13 @@ export async function markRecoveryFailure(ownerId:string,incidentKey:string,leas
   if(!data) return
   const attempts=Number(data.attempt_count), max=Number(data.max_attempts)
   const escalated=attempts>=max
-  await supabase.from('factory_recovery_incidents').update({
+  let query=supabase.from('factory_recovery_incidents').update({
     status:escalated?'escalated':'suppressed',cooldown_until:escalated?null:nextRecoveryWindow(now,DEFAULT_COOLDOWN_SECONDS),
     lease_until:null,lease_token:null,last_error:errorMessage.slice(0,2000),updated_at:now.toISOString(),
     resolved_at:escalated?now.toISOString():null
-  }).eq('owner_id',ownerId).eq('incident_key',incidentKey).eq('lease_token',leaseToken)
+  }).eq('owner_id',ownerId).eq('incident_key',incidentKey)
+  if (leaseToken) query=query.eq('lease_token',leaseToken)
+  await query
 }
 
 export async function markRecoveryStarted(ownerId:string,incidentKey:string,leaseToken:string,recoveryId:string) {
