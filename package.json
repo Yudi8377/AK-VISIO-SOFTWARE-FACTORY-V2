@@ -14,8 +14,9 @@
     "test:enterprise-runtime": "node --experimental-strip-types lib/enterprise/runtime.test.ts",
     "test:factory-execution": "node --experimental-strip-types lib/enterprise/execution.test.ts",
     "test:factory-qa": "node --experimental-strip-types lib/enterprise/qa.test.ts",
-    "test:all": "npm run test:contracts && npm run test:enterprise && npm run test:enterprise-runtime && npm run test:factory-execution && npm run test:factory-qa && npm run test:release",
-    "test:release": "node --experimental-strip-types lib/enterprise/release.test.ts"
+    "test:all": "npm run test:contracts && npm run test:enterprise && npm run test:enterprise-runtime && npm run test:factory-execution && npm run test:factory-qa && npm run test:release && npm run test:build",
+    "test:release": "node --experimental-strip-types lib/enterprise/release.test.ts",
+    "test:build": "node --experimental-strip-types lib/enterprise/build.test.ts"
   },
   "dependencies": {
     "@supabase/ssr": "0.12.7",
