@@ -21,7 +21,6 @@ export async function POST(request: Request) {
     organizationId: String(body.organizationId),
     requestedTargets: Array.isArray(body.requestedTargets) ? body.requestedTargets.map(String) : undefined,
     risk: body.risk === 'low' || body.risk === 'high' || body.risk === 'critical' ? body.risk : 'medium',
-    approvalGranted: body.approvalGranted === true,
   })
 
   if (result.status === 'blocked') {
