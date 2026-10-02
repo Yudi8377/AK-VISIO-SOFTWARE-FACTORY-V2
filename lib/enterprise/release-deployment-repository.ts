@@ -71,6 +71,15 @@ function deploymentFromRow(row: Record<string, unknown>): DeploymentEvidence {
   }
 }
 
+export async function persistDeploymentVerification(ownerId: string, deploymentId: string, verification: { status: 'pending' | 'passed' | 'failed'; reference: string; checkedAt: string }) {
+  const supabase = createServerSupabaseAdminClient()
+  const { error } = await supabase.from('factory_deployment_evidence').update({
+    verification_status: verification.status, verification_reference: verification.reference,
+    verified_at: verification.status === 'passed' ? verification.checkedAt : null,
+  }).eq('owner_id', ownerId).eq('deployment_id', deploymentId)
+  if (error) throw error
+}
+
 export async function persistDeploymentState(input: {
   deploymentId: string
   ownerId: string
