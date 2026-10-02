@@ -31,9 +31,7 @@ function formatDate(value: string | null) {
   return new Intl.DateTimeFormat('id-ID', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value))
 }
 
-function statusLabel(status: Incident['status']) {
-  return status.replace('_', ' ').toUpperCase()
-}
+function statusLabel(status: Incident['status']) { const labels: Record<Incident['status'], string> = { detected: 'TERDETEKSI', recovering: 'MEMULIHKAN', recovered: 'DIPULIHKAN', escalated: 'DIESKALASIKAN', suppressed: 'DITAHAN' }; return labels[status] }
 
 export default function Recovery() {
   const [incidents, setIncidents] = useState<Incident[]>([])
@@ -101,7 +99,7 @@ export default function Recovery() {
             <td style={{ padding: 12, borderBottom: '1px solid #19243a' }}>{item.attemptCount} / {item.maxPercobaan}</td>
             <td style={{ padding: 12, borderBottom: '1px solid #19243a', fontFamily: 'monospace', fontSize: 11 }}>{item.currentDeploymentId}</td>
             <td style={{ padding: 12, borderBottom: '1px solid #19243a', fontFamily: 'monospace', fontSize: 11 }}>{item.targetDeploymentId}</td>
-            <td style={{ padding: 12, borderBottom: '1px solid #19243a', maxWidth: 320, color: item.lastError ? '#d9a7a7' : '#65738d' }}>{item.lastError || '—'}</td>
+            <td style={{ padding: 12, borderBottom: '1px solid #19243a', maxWidth: 320, color: item.lastError ? '#d9a7a7' : '#65738d' }}>{item.lastError || 'Tidak ada'}</td>
             <td style={{ padding: 12, borderBottom: '1px solid #19243a', whiteSpace: 'nowrap' }}>{formatDate(item.updatedAt)}</td>
           </tr>)}</tbody>
         </table>
