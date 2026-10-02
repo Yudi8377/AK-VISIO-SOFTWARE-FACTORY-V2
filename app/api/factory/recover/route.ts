@@ -9,6 +9,7 @@ import {
   getLatestOwnedDeploymentState,
   getOwnedReleaseApproval,
   getOwnedReleasePackage,
+  getOwnedRecoveryEvidence,
   persistDeploymentEvidence,
   persistDeploymentState,
 } from '@/lib/enterprise/release-deployment-repository'
@@ -101,6 +102,15 @@ export async function POST(request: Request) {
     decisionId: decision.decisionId,
     evidenceHash: decision.evidenceHash,
   })
+  const existingRecovery = await getOwnedRecoveryEvidence(ownerId, execution.recoveryId)
+  if (existingRecovery) {
+    return NextResponse.json({
+      recoveryId: execution.recoveryId,
+      decision: 'already_executed',
+      existingRecovery,
+      health,
+    }, { status: 200 })
+  }
   await persistRecoveryEvidence({
     recoveryId: execution.recoveryId,
     ownerId,
