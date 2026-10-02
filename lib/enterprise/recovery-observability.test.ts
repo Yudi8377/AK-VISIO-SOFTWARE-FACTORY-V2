@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import { summarizeRecoveryIncidents, toRecoveryIncidentView } from './recovery-observability'
+import { summarizeRecoveryIncidents, toRecoveryIncidentView } from './recovery-observability.ts'
 
 const row = {
   id: '1',
