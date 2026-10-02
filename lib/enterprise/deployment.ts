@@ -43,6 +43,7 @@ export type DeploymentEvidence = {
   verificationReference: string
   verifiedAt?: string
   rollbackTargetDeploymentId?: string
+  recoveryIncidentKey?: string
 }
 
 function stable(value: unknown): string {
